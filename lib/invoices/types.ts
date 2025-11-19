@@ -1,5 +1,6 @@
 import { type } from 'arktype'
 import { CurrencySchema } from '@/lib/currency/types'
+import { getInvoiceBreakdown } from '@/lib/invoices/utils'
 
 export const LineItemSchema = type({
   id: 'string',
@@ -15,6 +16,7 @@ export const TaxItemSchema = type({
   type: 'string',
   amount: 'number',
   label: 'string',
+  cost: 'number',
 })
 
 export type TaxItem = typeof TaxItemSchema.infer
@@ -32,6 +34,8 @@ export const InvoiceSchema = type({
   dateIssued: 'number.epoch',
   datePaid: 'number.epoch',
   dateDue: 'number.epoch',
+  subtotal: 'number',
+  total: 'number',
 })
 
 export type Invoice = typeof InvoiceSchema.infer

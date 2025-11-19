@@ -24,6 +24,18 @@ html {
   --spacing: calc(1rem / var(--base-unit));
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --invoice-max-width: 595;
+  --invoice-width: min(
+    calc(var(--invoice-max-width) * 1px),
+    calc(100vw - 3rem)
+  );
+  --invoice-min-height: calc(
+    (var(--invoice-default-height) / var(--invoice-max-width)) *
+      var(--invoice-width)
+  );
+  --invoice-default-height: 768;
+  --container-invoice: var(--invoice-width);
+  --invoice-unit: calc(var(--invoice-width) / var(--invoice-max-width));
 }
 
 @utility text-* {
