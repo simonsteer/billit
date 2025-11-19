@@ -27,12 +27,20 @@ export function getInvoiceDiff(a: Invoice, b: Invoice) {
     diff.dateIssued = b.dateIssued
   }
 
+  if (a.dateDue !== b.dateDue) {
+    diff.dateDue = b.dateDue
+  }
+
   if (a.datePaid !== b.datePaid) {
     diff.datePaid = b.datePaid
   }
 
   if (a.fromDescription !== b.fromDescription) {
     diff.fromDescription = b.fromDescription
+  }
+
+  if (a.toDescription !== b.toDescription) {
+    diff.toDescription = b.toDescription
   }
 
   if (a.invoiceNumber !== b.invoiceNumber) {
@@ -57,10 +65,6 @@ export function getInvoiceDiff(a: Invoice, b: Invoice) {
     diff.lineItems = b.lineItems
   }
 
-  if (a.netD !== b.netD) {
-    diff.netD = b.netD
-  }
-
   if (a.paymentDescription !== b.paymentDescription) {
     diff.paymentDescription = b.paymentDescription
   }
@@ -80,10 +84,6 @@ export function getInvoiceDiff(a: Invoice, b: Invoice) {
   }
   if (taxesChanged) {
     diff.taxItems = b.taxItems
-  }
-
-  if (a.toDescription !== b.toDescription) {
-    diff.toDescription = b.toDescription
   }
 
   return diff

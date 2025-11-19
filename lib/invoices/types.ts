@@ -29,9 +29,9 @@ export const InvoiceSchema = type({
   taxItems: TaxItemSchema.array(),
   currency: CurrencySchema,
   invoiceNumber: 'number >= 0',
-  dateIssued: 'string.date',
-  datePaid: 'string.date',
-  netD: 'number >= 0',
+  dateIssued: 'number.epoch',
+  datePaid: 'number.epoch',
+  dateDue: 'number.epoch',
 })
 
 export type Invoice = typeof InvoiceSchema.infer
