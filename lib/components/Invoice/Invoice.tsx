@@ -10,13 +10,13 @@ import { LayoutNodeComponent, Text } from './components'
 
 export function Invoice({
   invoice,
+  layout,
   locale,
-  root,
   mode,
 }: {
   invoice: InvoiceJson
+  layout: RootLayoutNode
   locale: string
-  root: RootLayoutNode
   mode: LayoutMode
 }) {
   const formatCurrency = getCurrencyFormatter({
@@ -130,7 +130,7 @@ export function Invoice({
       components={components}
       data={invoice}
       mode={mode}
-      node={root}
+      node={layout}
     />
   )
 }

@@ -21,10 +21,15 @@ html {
 
 @theme inline {
   --base-unit: 16;
+  /* ratio based on A4 letter size; 8.27" x 11.69" */
+  --invoice-ratio: calc(1169 / 827);
   --spacing: calc(1rem / var(--base-unit));
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --invoice-max-width: 595;
+  --invoice-default-height: calc(
+    var(--invoice-max-width) * var(--invoice-ratio)
+  );
   --invoice-width: min(
     calc(var(--invoice-max-width) * 1px),
     calc(100vw - 3rem)
@@ -33,7 +38,6 @@ html {
     (var(--invoice-default-height) / var(--invoice-max-width)) *
       var(--invoice-width)
   );
-  --invoice-default-height: 768;
   --container-invoice: var(--invoice-width);
   --invoice-unit: calc(var(--invoice-width) / var(--invoice-max-width));
 }

@@ -1,4 +1,6 @@
 import { LayoutMode, LayoutNodeStyle } from '@/lib/layouts/types'
+import { parseInvoiceNodeStyle } from '@/lib/layouts/utils'
+import { Document, Page } from '@react-pdf/renderer'
 import { ReactNode } from 'react'
 
 export interface RootProps {
@@ -7,6 +9,28 @@ export interface RootProps {
   children?: ReactNode
 }
 
-export function Root({ mode, style, children }: RootProps) {
-  return null
+export function Root(props: RootProps) {
+  const style = parseInvoiceNodeStyle(props.style, props.mode)
+
+  switch (props.mode) {
+    case 'dom':
+      return (
+        <div
+          className="bg-white shadow-md w-(--invoice-width) min-h-(--invoice-min-height)"
+          style={style}
+        >
+          {props.children}
+        </div>
+      )
+    case 'yoga':
+      return (
+        <Document>
+          <Page size="A4" style={style}>
+            {props.children}
+          </Page>
+        </Document>
+      )
+    default:
+      return null
+  }
 }

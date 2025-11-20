@@ -1,4 +1,12 @@
-import { Invoice } from '@/lib/invoices/types'
+import { DateTime } from 'luxon'
+import { nanoid } from 'nanoid'
+import { Invoice, LineItem } from '@/lib/invoices/types'
+import {
+  DEFAULT_FROM_DESCRIPTION,
+  DEFAULT_LINE_ITEM_DESCRIPTION,
+  DEFAULT_PAYMENT_DESCRIPTION,
+  DEFAULT_TO_DESCRIPTION,
+} from '@/lib/invoices/vars'
 
 export function getInvoiceBreakdown(data: Invoice) {
   const subtotal = Object.values(data.lineItems).reduce(
@@ -88,3 +96,33 @@ export function getInvoiceDiff(a: Invoice, b: Invoice) {
 
   return diff
 }
+
+export const getAnonymousInvoice = (): Invoice => {
+  const now = DateTime.now()
+  const startOfDay = now.startOf('day')
+
+  return {
+    id: nanoid(),
+    createdAt: now.toUnixInteger(),
+    currency: 'USD',
+    dateIssued: startOfDay.toUnixInteger(),
+    dateDue: startOfDay.toUnixInteger(),
+    datePaid: null,
+    fromDescription: DEFAULT_FROM_DESCRIPTION,
+    invoiceNumber: 1,
+    lineItems: [getDefaultLineItem()],
+    paymentDescription: DEFAULT_PAYMENT_DESCRIPTION,
+    taxItems: [],
+    toDescription: DEFAULT_TO_DESCRIPTION,
+    updatedAt: null,
+    subtotal: 0,
+    total: 0,
+  }
+}
+
+export const getDefaultLineItem = (): LineItem => ({
+  description: DEFAULT_LINE_ITEM_DESCRIPTION,
+  id: nanoid(),
+  quantity: 1,
+  price: 0,
+})

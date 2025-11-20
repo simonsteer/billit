@@ -30,8 +30,10 @@ export const InvoiceSchema = type({
   currency: CurrencySchema,
   invoiceNumber: 'number >= 0',
   dateIssued: 'number.epoch',
-  datePaid: 'number.epoch',
   dateDue: 'number.epoch',
+  datePaid: 'number.epoch | null',
+  createdAt: 'number.epoch',
+  updatedAt: 'number.epoch | null',
   subtotal: 'number',
   total: 'number',
 })
