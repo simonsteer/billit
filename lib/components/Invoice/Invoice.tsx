@@ -91,7 +91,7 @@ export function Invoice({
           const item = invoice.taxItems.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
-              {item.type}
+              {item.text}
             </Text>
           )
         },

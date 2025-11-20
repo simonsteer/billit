@@ -49,6 +49,7 @@ export function LayoutNodeComponent({
       const Component = components[node.value]
       if (node.template) {
         if (Array.isArray(value)) {
+          if (value.length === 0) return null
           return (
             <Box key={node.id} mode={mode} style={node.style}>
               {value.map(item => {

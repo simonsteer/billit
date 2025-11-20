@@ -12,9 +12,9 @@ export type LineItem = typeof LineItemSchema.infer
 
 export const TaxItemSchema = type({
   id: 'string',
-  type: 'string',
+  text: 'string',
   amount: 'number',
-  label: 'string',
+  label: 'string | null',
   cost: 'number',
 })
 

@@ -41,7 +41,14 @@ export const DEFAULT_LAYOUT = root({
       ],
     }),
     box({
-      style: { flexDirection: 'row', gap: 16 },
+      style: {
+        flexDirection: 'row',
+        gap: 16,
+        borderTopColor: 'black',
+        borderTopWidth: 1,
+        borderTopStyle: 'dashed',
+        paddingTop: 16,
+      },
       children: [
         text({ style: { flex: 4 }, value: 'Item' }),
         box({
@@ -57,7 +64,10 @@ export const DEFAULT_LAYOUT = root({
       style: { gap: 16 },
       value: 'lineItems',
       template: box({
-        style: { flexDirection: 'row', gap: 16 },
+        style: {
+          flexDirection: 'row',
+          gap: 16,
+        },
         children: [
           field({
             style: { flex: 4 },
@@ -77,7 +87,14 @@ export const DEFAULT_LAYOUT = root({
       }),
     }),
     box({
-      style: { flexDirection: 'row', gap: 16 },
+      style: {
+        flexDirection: 'row',
+        gap: 16,
+        paddingTop: 32,
+        borderTopWidth: 1,
+        borderTopColor: 'black',
+        borderTopStyle: 'dashed',
+      },
       children: [
         box({ style: { flex: 4 } }),
         box({
@@ -113,7 +130,13 @@ export const DEFAULT_LAYOUT = root({
               }),
             }),
             box({
-              style: { flexDirection: 'row' },
+              style: {
+                flexDirection: 'row',
+                borderTopColor: 'black',
+                borderTopWidth: 1,
+                borderTopStyle: 'dashed',
+                paddingTop: 16,
+              },
               children: [
                 text({ style: { flex: 1 }, value: 'Total' }),
                 field({ style: { flex: 1 }, value: 'total' }),
