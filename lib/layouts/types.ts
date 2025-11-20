@@ -1,11 +1,13 @@
 import { type, scope } from 'arktype'
-import { Merge } from 'type-fest'
+import { JsonObject, Merge, KeyAsString } from 'type-fest'
 import { Styles as YogaStyles } from '@react-pdf/renderer'
 import {
+  Invoice,
   InvoiceSchema,
   LineItemSchema,
   TaxItemSchema,
 } from '@/lib/invoices/types'
+import { ReactNode } from 'react'
 
 export type LayoutMode = 'dom' | 'yoga'
 
@@ -95,3 +97,22 @@ export type FieldLayoutNode = typeof FieldLayoutNodeSchema.infer
 export type RootLayoutNode = typeof RootLayoutNodeSchema.infer
 
 export type ImageLayoutNode = typeof ImageLayoutNodeSchema.infer
+
+export type LayoutFieldComponents = FieldComponents<Invoice>
+
+type FieldComponents<D extends JsonObject, WithKey extends boolean = false> = {
+  [K in KeyAsString<D>]?: D[K] extends (infer V)[]
+    ? V extends JsonObject
+      ? {
+          key: (item: V) => string
+          components: FieldComponents<V, true>
+        }
+      : WithKey extends true
+      ? (args: { node: FieldLayoutNode; itemKey: string }) => ReactNode
+      : (args: { node: FieldLayoutNode }) => ReactNode
+    : D[K] extends JsonObject
+    ? FieldComponents<D[K], false>
+    : WithKey extends true
+    ? (args: { node: FieldLayoutNode; itemKey: string }) => ReactNode
+    : (args: { node: FieldLayoutNode }) => ReactNode
+}
