@@ -4,7 +4,7 @@ import { inferLocale } from '@/lib/i18n/utils'
 import { getAnonymousInvoice } from '@/lib/invoices/utils'
 import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
 
-export default async function Home() {
+export default async function Page() {
   const invoice = getAnonymousInvoice()
   const locale = inferLocale((await headers()).get('Accept-Language'))
 

@@ -258,6 +258,11 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
+"@faker-js/faker@^10.1.0":
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-10.1.0.tgz#eb72869d01ccbff41a77aa7ac851ce1ac9371129"
+  integrity sha512-C3mrr3b5dRVlKPJdfrAXS8+dq+rq8Qm5SNRazca0JKgw1HQERFmrVb0towvMmw5uu8hHKNiQasMaR/tydf3Zsg==
+
 "@fastify/busboy@^3.0.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-3.2.0.tgz#13ed8212f3b9ba697611529d15347f8528058cea"
@@ -1019,6 +1024,11 @@
     "@radix-ui/react-presence" "1.1.5"
     "@radix-ui/react-primitive" "2.1.3"
     "@radix-ui/react-use-controllable-state" "1.2.2"
+
+"@radix-ui/react-icons@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-icons/-/react-icons-1.3.2.tgz#09be63d178262181aeca5fb7f7bc944b10a7f441"
+  integrity sha512-fyQIhGDhzfc9pK2kH6Pl9c4BDJGfMkPqkyIgYDthyNYoNg3wVhoJMMh19WS4Up/1KMPFVpNsT2q3WmXn2N1m6g==
 
 "@radix-ui/react-id@1.1.1":
   version "1.1.1"

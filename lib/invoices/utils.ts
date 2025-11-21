@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
 import { nanoid } from 'nanoid'
+import { faker } from '@faker-js/faker'
 import { Invoice, LineItem } from '@/lib/invoices/types'
 import {
   DEFAULT_FROM_DESCRIPTION,
@@ -7,6 +8,7 @@ import {
   DEFAULT_PAYMENT_DESCRIPTION,
   DEFAULT_TO_DESCRIPTION,
 } from '@/lib/invoices/vars'
+import { CURRENCIES } from '@/lib/currency/vars'
 
 export function getInvoiceBreakdown(data: Invoice) {
   const subtotal = Object.values(data.lineItems).reduce(
@@ -126,3 +128,54 @@ export const getDefaultLineItem = (): LineItem => ({
   quantity: 1,
   price: 0,
 })
+
+export function getFakeInvoice(): Invoice {
+  const createdAt = faker.date.past({ years: 2 })
+
+  const updatedAt =
+    faker.helpers.maybe(() =>
+      faker.date.recent({ refDate: createdAt, days: 30 })
+    ) || null
+
+  const dateIssued = faker.date.soon({ refDate: createdAt, days: 5 })
+
+  const dateDue = faker.date.soon({ refDate: dateIssued, days: 15 })
+
+  const datePaid =
+    faker.helpers.maybe(() =>
+      faker.date.soon({ refDate: dateDue, days: 30 })
+    ) || null
+
+  const currency = CURRENCIES[Math.floor(Math.random() * CURRENCIES.length)]
+
+  return {
+    id: nanoid(),
+    toDescription: [
+      faker.person.fullName(),
+      faker.company.name(),
+      faker.location.streetAddress(),
+    ].join('\n'),
+    fromDescription: [
+      faker.person.fullName(),
+      faker.company.name(),
+      faker.location.streetAddress(),
+    ].join('\n'),
+    paymentDescription: [
+      faker.finance.accountNumber(),
+      faker.location.streetAddress(),
+      faker.finance.iban(),
+      `Payable via PayPal to ${faker.internet.email()}`,
+    ].join('\n'),
+    createdAt: createdAt.getUTCSeconds(),
+    updatedAt: updatedAt && updatedAt.getUTCSeconds(),
+    dateIssued: dateIssued.getUTCSeconds(),
+    dateDue: dateDue.getUTCSeconds(),
+    datePaid: datePaid && datePaid.getUTCSeconds(),
+    currency,
+    invoiceNumber: faker.helpers.rangeToNumber({ min: 0, max: 500 }),
+    lineItems: [getDefaultLineItem()],
+    taxItems: [],
+    subtotal: 0,
+    total: 0,
+  }
+}
