@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:seed": "npx tsx scripts/seedDevelopmentDatabase.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.13.1",
@@ -15,6 +16,7 @@
     "@react-pdf/renderer": "^4.3.1",
     "arktype": "^2.1.26",
     "clsx": "^2.1.1",
+    "decimal.js": "^10.6.0",
     "firebase-admin": "^13.6.0",
     "luxon": "^3.7.2",
     "motion": "^12.23.24",
@@ -28,13 +30,16 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/decimal.js": "^7.4.3",
     "@types/luxon": "^3.7.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

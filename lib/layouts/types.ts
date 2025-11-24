@@ -2,7 +2,7 @@ import { type, scope } from 'arktype'
 import { JsonObject, Merge, KeyAsString } from 'type-fest'
 import { Styles as YogaStyles } from '@react-pdf/renderer'
 import {
-  Invoice,
+  InvoiceJson,
   InvoiceSchema,
   LineItemSchema,
   TaxItemSchema,
@@ -117,7 +117,7 @@ export type RootLayoutNode = typeof RootLayoutNodeSchema.infer
 
 export type ImageLayoutNode = typeof ImageLayoutNodeSchema.infer
 
-export type LayoutFieldComponents = FieldComponents<Invoice>
+export type LayoutFieldComponents = FieldComponents<InvoiceJson>
 
 type FieldComponents<D extends JsonObject, WithKey extends boolean = false> = {
   [K in KeyAsString<D>]?: D[K] extends (infer V)[]

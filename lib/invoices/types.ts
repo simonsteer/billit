@@ -22,6 +22,7 @@ export type TaxItem = typeof TaxItemSchema.infer
 
 export const InvoiceSchema = type({
   id: 'string',
+  userId: 'string',
   fromDescription: 'string',
   toDescription: 'string',
   paymentDescription: 'string',
@@ -38,4 +39,4 @@ export const InvoiceSchema = type({
   total: 'number',
 })
 
-export type Invoice = typeof InvoiceSchema.infer
+export type InvoiceJson = typeof InvoiceSchema.infer

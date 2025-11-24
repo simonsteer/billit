@@ -32,8 +32,15 @@ export const DEFAULT_LAYOUT = root({
             box({
               style: { flexDirection: 'row' },
               children: [
-                text({ style: { flex: 1 }, value: 'Invoice Date:' }),
+                text({ style: { flex: 1 }, value: 'Date Issued:' }),
                 field({ style: { flex: 1 }, value: 'dateIssued' }),
+              ],
+            }),
+            box({
+              style: { flexDirection: 'row' },
+              children: [
+                text({ style: { flex: 1 }, value: 'Date Due:' }),
+                field({ style: { flex: 1 }, value: 'dateDue' }),
               ],
             }),
           ],

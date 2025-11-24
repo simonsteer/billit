@@ -5,7 +5,7 @@ import {
   RootLayoutNode,
 } from '@/lib/layouts/types'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
-import { Invoice as InvoiceJson } from '@/lib/invoices/types'
+import { InvoiceJson } from '@/lib/invoices/types'
 import { LayoutNodeComponent, Text } from './components'
 
 export function Invoice({
@@ -47,7 +47,7 @@ export function Invoice({
     ),
     dateDue: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {DateTime.fromSeconds(invoice.dateIssued).toFormat('LLL d, yyyy')}
+        {DateTime.fromSeconds(invoice.dateDue).toFormat('LLL d, yyyy')}
       </Text>
     ),
     invoiceNumber: ({ node }) => (
