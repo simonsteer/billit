@@ -24,8 +24,8 @@ html {
   /* ratio based on A4 letter size; 8.27" x 11.69" */
   --invoice-ratio: calc(1169 / 827);
   --spacing: calc(1rem / var(--base-unit));
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-newsreader);
+  --font-sans: var(--font-ibm-plex-sans);
   --invoice-max-width: 595;
   --invoice-default-height: calc(
     var(--invoice-max-width) * var(--invoice-ratio)

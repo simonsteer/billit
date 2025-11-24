@@ -150,11 +150,9 @@ export function getFakeInvoice(): Invoice {
 
   return {
     id: nanoid(),
-    toDescription: [
-      faker.person.fullName(),
-      faker.company.name(),
-      faker.location.streetAddress(),
-    ].join('\n'),
+    toDescription: [faker.company.name(), faker.location.streetAddress()].join(
+      '\n'
+    ),
     fromDescription: [
       faker.person.fullName(),
       faker.company.name(),

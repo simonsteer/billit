@@ -1,21 +1,16 @@
-import { headers } from 'next/headers'
-import { Invoice } from '@/lib/components/Invoice'
-import { inferLocale } from '@/lib/i18n/utils'
-import { getAnonymousInvoice } from '@/lib/invoices/utils'
-import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
+import { auth0 } from '@/lib/auth'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export default async function Page() {
-  const invoice = getAnonymousInvoice()
-  const locale = inferLocale((await headers()).get('Accept-Language'))
+  const session = await auth0.getSession()
+  if (session) redirect('/dashboard')
 
   return (
     <main className="w-screen min-h-screen p-24">
-      <Invoice
-        invoice={invoice}
-        locale={locale}
-        mode="dom"
-        layout={DEFAULT_LAYOUT}
-      />
+      <Link href="/auth/login" className="button login">
+        Log In
+      </Link>
     </main>
   )
 }
