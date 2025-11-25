@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { nanoid } from 'nanoid'
 import { faker } from '@faker-js/faker'
 import Decimal from 'decimal.js'
-import { InvoiceJson, LineItem, TaxItem } from '@/lib/invoices/types'
+import { InvoiceJson, LineItemJson, TaxItemJson } from '@/lib/invoices/types'
 import {
   DEFAULT_FROM_DESCRIPTION,
   DEFAULT_LINE_ITEM_DESCRIPTION,
@@ -18,35 +18,35 @@ export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
     diff.currency = b.currency
   }
 
-  if (a.dateIssued !== b.dateIssued) {
-    diff.dateIssued = b.dateIssued
+  if (a.date_issued !== b.date_issued) {
+    diff.date_issued = b.date_issued
   }
 
-  if (a.dateDue !== b.dateDue) {
-    diff.dateDue = b.dateDue
+  if (a.date_due !== b.date_due) {
+    diff.date_due = b.date_due
   }
 
-  if (a.datePaid !== b.datePaid) {
-    diff.datePaid = b.datePaid
+  if (a.date_paid !== b.date_paid) {
+    diff.date_paid = b.date_paid
   }
 
-  if (a.fromDescription !== b.fromDescription) {
-    diff.fromDescription = b.fromDescription
+  if (a.from_description !== b.from_description) {
+    diff.from_description = b.from_description
   }
 
-  if (a.toDescription !== b.toDescription) {
-    diff.toDescription = b.toDescription
+  if (a.to_description !== b.to_description) {
+    diff.to_description = b.to_description
   }
 
-  if (a.invoiceNumber !== b.invoiceNumber) {
-    diff.invoiceNumber = b.invoiceNumber
+  if (a.invoice_number !== b.invoice_number) {
+    diff.invoice_number = b.invoice_number
   }
 
-  let lineItemsChanged = a.lineItems.length !== b.lineItems.length
+  let lineItemsChanged = a.line_items.length !== b.line_items.length
   let li = 0
-  while (!lineItemsChanged && li < a.lineItems.length) {
-    const item_a = a.lineItems[li]
-    const item_b = b.lineItems[li]
+  while (!lineItemsChanged && li < a.line_items.length) {
+    const item_a = a.line_items[li]
+    const item_b = b.line_items[li]
 
     lineItemsChanged =
       item_a.id !== item_b.id ||
@@ -57,18 +57,18 @@ export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
     li++
   }
   if (lineItemsChanged) {
-    diff.lineItems = b.lineItems
+    diff.line_items = b.line_items
   }
 
-  if (a.paymentDescription !== b.paymentDescription) {
-    diff.paymentDescription = b.paymentDescription
+  if (a.payment_description !== b.payment_description) {
+    diff.payment_description = b.payment_description
   }
 
-  let taxesChanged = a.taxItems.length !== b.taxItems.length
+  let taxesChanged = a.tax_items.length !== b.tax_items.length
   let ti = 0
-  while (!taxesChanged && ti < a.taxItems.length) {
-    const item_a = a.taxItems[ti]
-    const item_b = b.taxItems[ti]
+  while (!taxesChanged && ti < a.tax_items.length) {
+    const item_a = a.tax_items[ti]
+    const item_b = b.tax_items[ti]
 
     taxesChanged =
       item_a.amount !== item_b.amount ||
@@ -78,7 +78,7 @@ export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
     ti++
   }
   if (taxesChanged) {
-    diff.taxItems = b.taxItems
+    diff.tax_items = b.tax_items
   }
 
   return diff
@@ -89,31 +89,31 @@ export const getAnonymousInvoice = (): InvoiceJson => {
   const startOfDay = now.startOf('day')
 
   return {
-    userId: 'anonymous',
+    user_id: 'anonymous',
     id: nanoid(),
-    createdAt: now.toUnixInteger(),
+    created_at: now.toSQLDate(),
     currency: 'USD',
-    dateIssued: startOfDay.toUnixInteger(),
-    dateDue: startOfDay.toUnixInteger(),
-    datePaid: null,
-    fromDescription: DEFAULT_FROM_DESCRIPTION,
-    invoiceNumber: 1,
-    lineItems: [getDefaultLineItem()],
-    paymentDescription: DEFAULT_PAYMENT_DESCRIPTION,
-    taxItems: [],
-    toDescription: DEFAULT_TO_DESCRIPTION,
-    updatedAt: null,
+    date_issued: startOfDay.toSQLDate(),
+    date_due: startOfDay.toSQLDate(),
+    date_paid: null,
+    from_description: DEFAULT_FROM_DESCRIPTION,
+    invoice_number: 1,
+    line_items: [getDefaultLineItem()],
+    payment_description: DEFAULT_PAYMENT_DESCRIPTION,
+    tax_items: [],
+    to_description: DEFAULT_TO_DESCRIPTION,
+    updated_at: null,
     subtotal: 0,
     total: 0,
   }
 }
 
-export const getLineItemCost = (lineItem: LineItem) => {
+export const getLineItemCost = (lineItem: LineItemJson) => {
   const cost = Decimal.mul(lineItem.price, lineItem.quantity).toDecimalPlaces(2)
   return cost
 }
 
-export const getLineItemsSubtotal = (lineItems: LineItem[]) =>
+export const getLineItemsSubtotal = (lineItems: LineItemJson[]) =>
   lineItems.reduce(
     (subtotal, lineItem) =>
       Decimal.add(subtotal, getLineItemCost(lineItem)).toNumber(),
@@ -122,21 +122,21 @@ export const getLineItemsSubtotal = (lineItems: LineItem[]) =>
 
 export const getInvoiceTotal = (
   lineItemsSubtotal: number,
-  taxItems: TaxItem[]
+  taxItems: TaxItemJson[]
 ) =>
   taxItems.reduce(
     (acc, n) => Decimal.add(acc, n.cost).toNumber(),
     lineItemsSubtotal
   )
 
-export const getDefaultLineItem = (): LineItem => ({
+export const getDefaultLineItem = (): LineItemJson => ({
   description: DEFAULT_LINE_ITEM_DESCRIPTION,
   id: nanoid(),
   quantity: 1,
   price: 0,
 })
 
-export function getFakeLineItem(): LineItem {
+export function getFakeLineItem(): LineItemJson {
   return {
     id: nanoid(),
     description: faker.commerce.productName(),
@@ -157,13 +157,13 @@ export function getFakeInvoice(userId: string): InvoiceJson {
       faker.date.recent({ refDate: createdAt, days: 30 })
     ) || null
 
-  const dateIssued = faker.date.soon({ refDate: createdAt, days: 5 })
+  const date_issued = faker.date.soon({ refDate: createdAt, days: 5 })
 
-  const dateDue = faker.date.soon({ refDate: dateIssued, days: 15 })
+  const date_due = faker.date.soon({ refDate: date_issued, days: 15 })
 
-  const datePaid =
+  const date_paid =
     faker.helpers.maybe(() =>
-      faker.date.soon({ refDate: dateDue, days: 30 })
+      faker.date.soon({ refDate: date_due, days: 30 })
     ) || null
 
   const currency = CURRENCIES[Math.floor(Math.random() * CURRENCIES.length)]
@@ -187,32 +187,32 @@ export function getFakeInvoice(userId: string): InvoiceJson {
   const total = getInvoiceTotal(subtotal, taxItems)
 
   return {
-    userId,
+    user_id: userId,
     id: nanoid(),
-    toDescription: [faker.company.name(), faker.location.streetAddress()].join(
+    to_description: [faker.company.name(), faker.location.streetAddress()].join(
       '\n'
     ),
-    fromDescription: [
+    from_description: [
       faker.person.fullName(),
       faker.company.name(),
       faker.location.streetAddress(),
     ].join('\n'),
-    paymentDescription: [
+    payment_description: [
       faker.finance.accountNumber(),
       faker.location.streetAddress(),
       faker.finance.iban(),
       `\nPayable via PayPal to ${faker.internet.email()}`,
     ].join('\n'),
-    createdAt: DateTime.fromJSDate(createdAt).toUnixInteger(),
-    updatedAt: updatedAt && DateTime.fromJSDate(updatedAt).toUnixInteger(),
-    dateIssued: DateTime.fromJSDate(dateIssued).startOf('day').toUnixInteger(),
-    dateDue: DateTime.fromJSDate(dateDue).startOf('day').toUnixInteger(),
-    datePaid:
-      datePaid && DateTime.fromJSDate(datePaid).startOf('day').toUnixInteger(),
+    created_at: DateTime.fromJSDate(createdAt).toSQL()!,
+    updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
+    date_issued: DateTime.fromJSDate(date_issued).startOf('day').toSQLDate()!,
+    date_due: DateTime.fromJSDate(date_due).startOf('day').toSQLDate()!,
+    date_paid:
+      date_paid && DateTime.fromJSDate(date_paid).startOf('day').toSQLDate(),
     currency,
-    invoiceNumber: faker.helpers.rangeToNumber({ min: 0, max: 500 }),
-    lineItems,
-    taxItems,
+    invoice_number: faker.helpers.rangeToNumber({ min: 0, max: 500 }),
+    line_items: lineItems,
+    tax_items: taxItems,
     subtotal,
     total,
   }

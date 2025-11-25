@@ -3,9 +3,9 @@ import { JsonObject, Merge, KeyAsString } from 'type-fest'
 import { Styles as YogaStyles } from '@react-pdf/renderer'
 import {
   InvoiceJson,
-  InvoiceSchema,
   LineItemSchema,
   TaxItemSchema,
+  InvoiceSchema,
 } from '@/lib/invoices/types'
 import { ReactNode } from 'react'
 

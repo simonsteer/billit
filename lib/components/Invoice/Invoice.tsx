@@ -25,41 +25,41 @@ export function Invoice({
   })
 
   const components: LayoutFieldComponents = {
-    fromDescription: ({ node }) => (
+    from_description: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {invoice.fromDescription}
+        {invoice.from_description}
       </Text>
     ),
-    toDescription: ({ node }) => (
+    to_description: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {invoice.toDescription}
+        {invoice.to_description}
       </Text>
     ),
-    paymentDescription: ({ node }) => (
+    payment_description: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {invoice.paymentDescription}
+        {invoice.payment_description}
       </Text>
     ),
-    dateIssued: ({ node }) => (
+    date_issued: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {DateTime.fromSeconds(invoice.dateIssued).toFormat('LLL d, yyyy')}
+        {DateTime.fromSQL(invoice.date_issued).toFormat('LLL d, yyyy')}
       </Text>
     ),
-    dateDue: ({ node }) => (
+    date_due: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {DateTime.fromSeconds(invoice.dateDue).toFormat('LLL d, yyyy')}
+        {DateTime.fromSQL(invoice.date_due).toFormat('LLL d, yyyy')}
       </Text>
     ),
-    invoiceNumber: ({ node }) => (
+    invoice_number: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {invoice.invoiceNumber}
+        {invoice.invoice_number}
       </Text>
     ),
-    lineItems: {
+    line_items: {
       key: item => item.id,
       components: {
         description: ({ node, itemKey }) => {
-          const item = invoice.lineItems.find(item => item.id === itemKey)!
+          const item = invoice.line_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
               {item.description}
@@ -67,7 +67,7 @@ export function Invoice({
           )
         },
         price: ({ node, itemKey }) => {
-          const item = invoice.lineItems.find(item => item.id === itemKey)!
+          const item = invoice.line_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
               {formatCurrency(item.price)}
@@ -75,7 +75,7 @@ export function Invoice({
           )
         },
         quantity: ({ node, itemKey }) => {
-          const item = invoice.lineItems.find(item => item.id === itemKey)!
+          const item = invoice.line_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
               {item.quantity}
@@ -84,11 +84,11 @@ export function Invoice({
         },
       },
     },
-    taxItems: {
+    tax_items: {
       key: item => item.id,
       components: {
         label: ({ node, itemKey }) => {
-          const item = invoice.taxItems.find(item => item.id === itemKey)!
+          const item = invoice.tax_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
               {item.text}
@@ -96,7 +96,7 @@ export function Invoice({
           )
         },
         amount: ({ node, itemKey }) => {
-          const item = invoice.taxItems.find(item => item.id === itemKey)!
+          const item = invoice.tax_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
               {item.amount}
@@ -104,7 +104,7 @@ export function Invoice({
           )
         },
         cost: ({ node, itemKey }) => {
-          const item = invoice.taxItems.find(item => item.id === itemKey)!
+          const item = invoice.tax_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
               {formatCurrency(item.cost)}

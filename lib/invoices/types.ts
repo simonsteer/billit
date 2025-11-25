@@ -1,5 +1,6 @@
 import { type } from 'arktype'
-import { CurrencySchema } from '@/lib/currency/types'
+import { createInsertSchema } from 'drizzle-arktype'
+import { invoices } from '@/lib/db/schema'
 
 export const LineItemSchema = type({
   id: 'string',
@@ -8,7 +9,7 @@ export const LineItemSchema = type({
   quantity: 'number',
 })
 
-export type LineItem = typeof LineItemSchema.infer
+export type LineItemJson = typeof LineItemSchema.infer
 
 export const TaxItemSchema = type({
   id: 'string',
@@ -18,25 +19,8 @@ export const TaxItemSchema = type({
   cost: 'number',
 })
 
-export type TaxItem = typeof TaxItemSchema.infer
+export const InvoiceSchema = createInsertSchema(invoices)
 
-export const InvoiceSchema = type({
-  id: 'string',
-  userId: 'string',
-  fromDescription: 'string',
-  toDescription: 'string',
-  paymentDescription: 'string',
-  lineItems: LineItemSchema.array(),
-  taxItems: TaxItemSchema.array(),
-  currency: CurrencySchema,
-  invoiceNumber: 'number >= 0',
-  dateIssued: 'number.epoch',
-  dateDue: 'number.epoch',
-  datePaid: 'number.epoch | null',
-  createdAt: 'number.epoch',
-  updatedAt: 'number.epoch | null',
-  subtotal: 'number',
-  total: 'number',
-})
+export type TaxItemJson = typeof TaxItemSchema.infer
 
 export type InvoiceJson = typeof InvoiceSchema.infer

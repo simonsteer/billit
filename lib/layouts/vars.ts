@@ -15,8 +15,8 @@ export const DEFAULT_LAYOUT = root({
         box({
           style: { gap: 108, flex: 4 },
           children: [
-            field({ value: 'fromDescription' }),
-            field({ value: 'toDescription' }),
+            field({ value: 'from_description' }),
+            field({ value: 'to_description' }),
           ],
         }),
         box({
@@ -26,21 +26,21 @@ export const DEFAULT_LAYOUT = root({
               style: { flexDirection: 'row' },
               children: [
                 text({ style: { flex: 1 }, value: 'Invoice Number:' }),
-                field({ style: { flex: 1 }, value: 'invoiceNumber' }),
+                field({ style: { flex: 1 }, value: 'invoice_number' }),
               ],
             }),
             box({
               style: { flexDirection: 'row' },
               children: [
                 text({ style: { flex: 1 }, value: 'Date Issued:' }),
-                field({ style: { flex: 1 }, value: 'dateIssued' }),
+                field({ style: { flex: 1 }, value: 'date_issued' }),
               ],
             }),
             box({
               style: { flexDirection: 'row' },
               children: [
                 text({ style: { flex: 1 }, value: 'Date Due:' }),
-                field({ style: { flex: 1 }, value: 'dateDue' }),
+                field({ style: { flex: 1 }, value: 'date_due' }),
               ],
             }),
           ],
@@ -69,7 +69,7 @@ export const DEFAULT_LAYOUT = root({
     }),
     field({
       style: { gap: 16 },
-      value: 'lineItems',
+      value: 'line_items',
       template: box({
         style: {
           flexDirection: 'row',
@@ -116,7 +116,7 @@ export const DEFAULT_LAYOUT = root({
             }),
             field({
               style: { gap: 16 },
-              value: 'taxItems',
+              value: 'tax_items',
               template: box({
                 style: { flexDirection: 'row' },
                 children: [
@@ -161,7 +161,7 @@ export const DEFAULT_LAYOUT = root({
         alignContent: 'flex-end',
       },
       children: [
-        field({ style: { flex: 4 }, value: 'paymentDescription' }),
+        field({ style: { flex: 4 }, value: 'payment_description' }),
         box({ style: { flex: 3 } }),
       ],
     }),
