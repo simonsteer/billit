@@ -1,6 +1,6 @@
 import { headers } from 'next/headers'
 import { renderToStream } from '@react-pdf/renderer'
-import { Invoice } from '@/lib/components/Invoice'
+import { Invoice } from '@/lib/components'
 import { inferLocale } from '@/lib/i18n/utils'
 import { getAnonymousInvoice } from '@/lib/invoices/utils'
 import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
