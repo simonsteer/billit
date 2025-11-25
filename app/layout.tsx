@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans, Newsreader } from 'next/font/google'
 import { Auth0Provider } from '@auth0/nextjs-auth0/client'
+import { QueryProvider } from '@/lib/components'
 import './globals.css'
 
 const newsreader = Newsreader({
@@ -24,7 +25,9 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       <body
         className={`${newsreader.variable} ${ibmPlexSans.variable} antialiased`}
       >
-        <Auth0Provider>{children}</Auth0Provider>
+        <Auth0Provider>
+          <QueryProvider>{children}</QueryProvider>
+        </Auth0Provider>
       </body>
     </html>
   )

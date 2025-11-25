@@ -1,12 +1,19 @@
 import { getFakeInvoice } from '@/lib/invoices/utils'
+import { db } from '@/lib/db/client'
+import { invoices } from '@/lib/db/schema'
 
 async function main() {
   // delete invoices from development database
+  await db.delete(invoices)
 
-  // batch create fake invoices for each admin user
-  const invoices = process.env
-    .ADMIN_USER_IDS!.split(',')
-    .flatMap(userId => [...Array(500)].map(() => getFakeInvoice(userId)))
+  // bulk insert fake invoices for each admin user
+  await db
+    .insert(invoices)
+    .values(
+      process.env
+        .ADMIN_USER_IDS!.split(',')
+        .flatMap(userId => [...Array(500)].map(() => getFakeInvoice(userId)))
+    )
 }
 
 main()
