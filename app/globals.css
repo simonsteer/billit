@@ -26,6 +26,7 @@ html {
   --spacing: calc(1rem / var(--base-unit));
   --font-serif: var(--font-newsreader);
   --font-sans: var(--font-ibm-plex-sans);
+  --font-mono: var(--font-ibm-plex-mono);
   --invoice-max-width: 595;
   --invoice-default-height: calc(
     var(--invoice-max-width) * var(--invoice-ratio)

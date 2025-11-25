@@ -16,7 +16,12 @@ export const DEFAULT_LAYOUT = root({
           style: { gap: 108, flex: 4 },
           children: [
             field({ value: 'from_description' }),
-            field({ value: 'to_description' }),
+            box({
+              children: [
+                text({ value: 'Billed to:' }),
+                field({ value: 'to_description' }),
+              ],
+            }),
           ],
         }),
         box({

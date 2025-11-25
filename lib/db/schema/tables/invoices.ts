@@ -48,8 +48,8 @@ export const invoices = pgTable(
         }[]
       >()
       .notNull(),
-    subtotal: numeric().notNull(),
-    total: numeric().notNull(),
+    subtotal: numeric({ mode: 'number' }).notNull(),
+    total: numeric({ mode: 'number' }).notNull(),
   },
   table => [index('user_id_idx').on(table.user_id)]
 )
