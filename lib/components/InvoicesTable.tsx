@@ -3,27 +3,31 @@
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
 import { ReactNode } from 'react'
+import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { useQuery } from '@tanstack/react-query'
-import { getInvoices, GetInvoicesParams } from '@/lib/invoices/actions'
+import { getInvoicesAction, GetInvoicesParams } from '@/lib/invoices/actions'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 
 export function InvoicesTable({
   params,
   locale,
+  title,
 }: {
   params: GetInvoicesParams
   locale: string
+  title: string
 }) {
   const { data, error, isPending } = useQuery({
     queryKey: ['invoices_table', params],
-    queryFn: async () => {
-      const res = await getInvoices(params)
-      return res
-    },
+    queryFn: async () => await getInvoicesAction(params),
   })
 
   return (
     <div>
+      <div className="flex items-center mb-12 gap-12">
+        <h2 className="text-28 leading-40 font-serif">{title}</h2>
+        <MixerHorizontalIcon className="w-18 h-18 text-neutral-400" />
+      </div>
       <div className="relative rounded-lg border border-neutral-200 h-280 overflow-scroll no-scrollbar">
         {isPending && (
           <div className="absolute inset-0 flex items-center justify-center">

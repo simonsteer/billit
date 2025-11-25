@@ -24,7 +24,7 @@ export type GetInvoicesParams = {
 
 const GET_INVOICES_PAGE_SIZE = 50
 
-export async function getInvoices({
+export async function getInvoicesAction({
   page,
   paid,
   currency,
@@ -46,7 +46,7 @@ export async function getInvoices({
     else order.push(desc(invoices[column]))
   }
 
-  return await db
+  return await db()
     .select()
     .from(invoices)
     .offset(GET_INVOICES_PAGE_SIZE * (page - 1))

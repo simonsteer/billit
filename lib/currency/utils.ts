@@ -59,7 +59,7 @@ export async function updateConversionRates() {
   )
     .then(res => res.json())
     .then(async data => {
-      await db
+      await db()
         .insert(conversion_rates)
         .values({ id: 'singleton', data })
         .onConflictDoUpdate({ target: conversion_rates.id, set: { data } })
@@ -67,6 +67,6 @@ export async function updateConversionRates() {
 }
 
 export async function getConversionRates() {
-  const [rates] = await db.select().from(conversion_rates)
+  const [rates] = await db().select().from(conversion_rates)
   return rates
 }

@@ -11,10 +11,10 @@ async function main() {
   await updateConversionRates()
 
   // delete invoices from development database
-  await db.delete(invoices)
+  await db().delete(invoices)
 
   // bulk insert fake invoices for each admin user
-  await db
+  await db()
     .insert(invoices)
     .values(
       process.env
