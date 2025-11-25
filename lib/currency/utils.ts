@@ -1,4 +1,6 @@
 import { Currency } from '@/lib/currency/types'
+import { db } from '@/lib/db/client'
+import { conversion_rates } from '@/lib/db/schema'
 
 export const getCurrencyFormatParts = ({
   locale,
@@ -49,4 +51,22 @@ export const getCurrencyFormatter = ({
       return getCurrencyFormatter({ locale: 'en-US', currency })(amount)
     }
   }
+}
+
+export async function updateConversionRates() {
+  await fetch(
+    `https://openexchangerates.org/api/latest.json?app_id=${process.env.OXR_APP_ID}&base=USD`
+  )
+    .then(res => res.json())
+    .then(async data => {
+      await db
+        .insert(conversion_rates)
+        .values({ id: 'singleton', data })
+        .onConflictDoUpdate({ target: conversion_rates.id, set: { data } })
+    })
+}
+
+export async function getConversionRates() {
+  const [rates] = await db.select().from(conversion_rates)
+  return rates
 }
