@@ -58,7 +58,7 @@ export function InvoicesTable({
                 <li key={invoice.id} className="flex">
                   <ColumnCell size="sm">{invoice.invoice_number}</ColumnCell>
                   <ColumnCell size="lg">
-                    <span className="block truncate">
+                    <span className="block w-215 truncate">
                       {invoice.to_description.split('\n')[0]}
                     </span>
                   </ColumnCell>

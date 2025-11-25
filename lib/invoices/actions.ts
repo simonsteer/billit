@@ -4,7 +4,7 @@ import { auth0 } from '@/lib/auth'
 import { Currency } from '@/lib/currency/types'
 import { db } from '@/lib/db/client'
 import { invoices } from '@/lib/db/schema'
-import { and, asc, desc, eq, isNotNull } from 'drizzle-orm'
+import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm'
 
 type InvoicesOrderingField =
   | 'created_at'
@@ -35,7 +35,8 @@ export async function getInvoices({
   if (!userId) return []
 
   let where = []
-  if (paid) where.push(isNotNull(invoices.date_paid))
+  if (paid === true) where.push(isNotNull(invoices.date_paid))
+  if (paid === false) where.push(isNull(invoices.date_paid))
   if (currency) where.push(eq(invoices.currency, currency))
 
   let order = []
