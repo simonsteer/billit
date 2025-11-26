@@ -3,7 +3,7 @@ import clsx from 'clsx'
 
 export function Pagination({
   currentPage,
-  totalPages,
+  maxPage,
   onClickPage,
   className,
   onClickPrev,
@@ -12,13 +12,13 @@ export function Pagination({
 }: {
   peekSize?: number
   currentPage: number
-  totalPages: number
+  maxPage: number
   onClickPage: (n: number) => void
   className?: string
   onClickPrev(): void
   onClickNext(): void
 }) {
-  const numberGroups = getNumberGroups({ currentPage, totalPages, peekSize })
+  const numberGroups = getNumberGroups({ currentPage, maxPage, peekSize })
 
   return (
     <div className={clsx('flex items-center justify-center', className)}>
@@ -75,31 +75,28 @@ export function Pagination({
 
 const getNumberGroups = ({
   currentPage,
-  totalPages,
+  maxPage,
   peekSize,
 }: {
   currentPage: number
-  totalPages: number
+  maxPage: number
   peekSize: number
 }): number[][] => {
-  if (totalPages < peekSize * 2 - 2) {
-    return [[...Array(totalPages)].map((_, p) => p + 1)]
+  if (maxPage < peekSize * 2 - 2) {
+    return [[...Array(maxPage)].map((_, p) => p + 1)]
   }
 
   if (currentPage < peekSize) {
-    return [[...Array(peekSize)].map((_, i) => i + 1), [totalPages]]
+    return [[...Array(peekSize)].map((_, i) => i + 1), [maxPage]]
   }
 
-  if (currentPage >= peekSize && currentPage <= totalPages - (peekSize - 1)) {
-    return [[1], [currentPage - 1, currentPage, currentPage + 1], [totalPages]]
+  if (currentPage >= peekSize && currentPage <= maxPage - (peekSize - 1)) {
+    return [[1], [currentPage - 1, currentPage, currentPage + 1], [maxPage]]
   }
 
-  if (currentPage >= totalPages - (peekSize + 1)) {
-    return [
-      [1],
-      [...Array(peekSize)].map((_, i) => totalPages - peekSize + i + 1),
-    ]
+  if (currentPage >= maxPage - (peekSize + 1)) {
+    return [[1], [...Array(peekSize)].map((_, i) => maxPage - peekSize + i + 1)]
   }
 
-  return [[...Array(totalPages)].map((_, p) => p + 1)]
+  return [[...Array(maxPage)].map((_, p) => p + 1)]
 }

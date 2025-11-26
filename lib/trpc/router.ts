@@ -57,7 +57,7 @@ export const trpcRouter = createTRPCRouter({
       return {
         invoices: rows,
         currentPage: page,
-        maxPage: Math.floor(total / 50),
+        maxPage: Math.ceil(total / 50),
       }
     }),
   getUpcomingDepositsTotal: baseProcedure

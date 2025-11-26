@@ -115,8 +115,9 @@ export function InvoicesTable({
       <div className="flex items-center justify-center h-48">
         {!!stale && (
           <Pagination
+            className="animate-fade-in"
             currentPage={stale.currentPage}
-            totalPages={stale.maxPage}
+            maxPage={stale.maxPage}
             onClickNext={() => {
               if (page === stale.maxPage) return
               setPage(stale.currentPage + 1)
@@ -148,7 +149,7 @@ function ColumnHeading({
     <span
       className={clsx(
         'font-serif text-14 leading-20',
-        'bg-neutral-100 shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
+        'bg-neutral-50 shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
         {
           ['min-w-120']: size === 'sm',
           ['min-w-180']: size === 'md',
