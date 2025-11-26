@@ -1,5 +1,5 @@
 import { type } from 'arktype'
-import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm'
+import { and, asc, count, desc, eq, isNotNull, isNull } from 'drizzle-orm'
 import Decimal from 'decimal.js'
 import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
@@ -25,7 +25,7 @@ export const trpcRouter = createTRPCRouter({
       'use server'
       const session = await auth0.getSession()
       const userId = session?.user.sub
-      if (!userId) return []
+      if (!userId) return { invoices: [], currentPage: page, maxPage: page }
 
       let where = []
       if (paid === true) where.push(isNotNull(invoices.date_paid))
@@ -39,13 +39,26 @@ export const trpcRouter = createTRPCRouter({
         else order.push(desc(invoices[column]))
       }
 
-      return await db()
-        .select()
-        .from(invoices)
-        .offset(50 * (page - 1))
-        .limit(50)
-        .where(and(...where))
-        .orderBy(...order)
+      const [[{ total }], rows] = await Promise.all([
+        db()
+          .select({ total: count() })
+          .from(invoices)
+          .where(and(...where))
+          .limit(1),
+        db()
+          .select()
+          .from(invoices)
+          .where(and(...where))
+          .orderBy(...order)
+          .offset(50 * (page - 1))
+          .limit(50),
+      ])
+
+      return {
+        invoices: rows,
+        currentPage: page,
+        maxPage: Math.floor(total / 50),
+      }
     }),
   getUpcomingDepositsTotal: baseProcedure
     .input(type({ currency: CurrencySchema }))

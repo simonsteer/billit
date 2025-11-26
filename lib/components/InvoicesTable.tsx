@@ -2,21 +2,34 @@
 
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
+import { Pagination } from '@/lib/components'
 
 export function InvoicesTable({
   params,
   locale,
   title,
 }: {
-  params: Parameters<typeof trpc.getInvoices.useQuery>[0]
+  params: Exclude<Parameters<typeof trpc.getInvoices.useQuery>[0], symbol>
   locale: string
   title: string
 }) {
-  const { data, error, isPending } = trpc.getInvoices.useQuery(params)
+  const [page, setPage] = useState(params.page)
+  const { data, error, isPending } = trpc.getInvoices.useQuery(
+    {
+      ...params,
+      page,
+    },
+    {}
+  )
+
+  const [stale, setStale] = useState(data)
+  useEffect(() => {
+    if (data !== undefined) setStale(data)
+  }, [data])
 
   return (
     <div>
@@ -26,7 +39,7 @@ export function InvoicesTable({
         </h2>
         <MixerHorizontalIcon className="w-18 h-18 text-neutral-400" />
       </div>
-      <div className="relative rounded-lg bg-white border border-neutral-300 h-320 overflow-scroll no-scrollbar shadow-lg shadow-black/5">
+      <div className="relative rounded-lg bg-neutral-50 border border-neutral-300 h-320 overflow-scroll no-scrollbar shadow-lg shadow-black/5">
         {isPending && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-24 h-24 rounded-full border-2 border-neutral-400 border-r-transparent animate-spin" />
@@ -50,7 +63,7 @@ export function InvoicesTable({
                 Total
               </ColumnHeading>
             </li>
-            {data.map(invoice => {
+            {data.invoices.map(invoice => {
               const formatCurrency = getCurrencyFormatter({
                 currency: invoice.currency,
                 locale,
@@ -97,6 +110,23 @@ export function InvoicesTable({
               )
             })}
           </ul>
+        )}
+      </div>
+      <div className="flex items-center justify-center h-48">
+        {!!stale && (
+          <Pagination
+            currentPage={stale.currentPage}
+            totalPages={stale.maxPage}
+            onClickNext={() => {
+              if (page === stale.maxPage) return
+              setPage(stale.currentPage + 1)
+            }}
+            onClickPrev={() => {
+              if (page === 1) return
+              setPage(stale.currentPage - 1)
+            }}
+            onClickPage={setPage}
+          />
         )}
       </div>
     </div>
