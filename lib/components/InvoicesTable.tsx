@@ -4,23 +4,19 @@ import clsx from 'clsx'
 import { DateTime } from 'luxon'
 import { ReactNode } from 'react'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
-import { useQuery } from '@tanstack/react-query'
-import { getInvoicesAction, GetInvoicesParams } from '@/lib/invoices/actions'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
+import { trpc } from '@/lib/trpc/react'
 
 export function InvoicesTable({
   params,
   locale,
   title,
 }: {
-  params: GetInvoicesParams
+  params: Parameters<typeof trpc.getInvoices.useQuery>[0]
   locale: string
   title: string
 }) {
-  const { data, error, isPending } = useQuery({
-    queryKey: ['invoices_table', params],
-    queryFn: async () => await getInvoicesAction(params),
-  })
+  const { data, error, isPending } = trpc.getInvoices.useQuery(params)
 
   return (
     <div>

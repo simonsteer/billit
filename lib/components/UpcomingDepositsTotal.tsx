@@ -1,9 +1,8 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { getUpcomingDepositsTotalAction } from '@/lib/invoices/actions'
 import { Currency } from '@/lib/currency/types'
-import { getCurrencyFormatter } from '../currency/utils'
+import { getCurrencyFormatter } from '@/lib/currency/utils'
+import { trpc } from '@/lib/trpc/react'
 
 export function UpcomingDepositsTotal({
   currency,
@@ -12,9 +11,8 @@ export function UpcomingDepositsTotal({
   currency: Currency
   locale: string
 }) {
-  const { data, error, isPending } = useQuery({
-    queryKey: ['upcoming_deposits_total', currency],
-    queryFn: async () => await getUpcomingDepositsTotalAction(currency),
+  const { data } = trpc.getUpcomingDepositsTotal.useQuery({
+    currency,
   })
 
   if (!data) return null
