@@ -41,6 +41,16 @@ html {
   );
   --container-invoice: var(--invoice-width);
   --invoice-unit: calc(var(--invoice-width) / var(--invoice-max-width));
+
+  --animate-fade-in: fade-in 0.3s ease-out;
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 }
 
 @utility text-* {

@@ -1,19 +1,28 @@
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import { auth0 } from '@/lib/auth'
 import { InvoicesTable } from '@/lib/components'
-import { inferLocale } from '@/lib/i18n/utils'
+import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
 
 export default async function Page() {
   const session = await auth0.getSession()
   if (!session) redirect('/')
 
-  const locale = inferLocale((await headers()).get('Accept-Language'))
+  const locale = await inferLocaleFromHeaders()
 
   return (
     <div className="flex flex-col gap-40">
       <InvoicesTable
-        title="Paid invoices"
+        title="Recently Issued"
+        locale={locale}
+        params={{
+          paid: null,
+          ordering: ['date_due', 'desc'],
+          page: 1,
+          currency: null,
+        }}
+      />
+      <InvoicesTable
+        title="Settled"
         locale={locale}
         params={{
           paid: true,
@@ -23,11 +32,11 @@ export default async function Page() {
         }}
       />
       <InvoicesTable
-        title="Unpaid invoices"
+        title="Outstanding"
         locale={locale}
         params={{
           paid: false,
-          ordering: ['date_due', 'asc'],
+          ordering: ['date_due', 'desc'],
           page: 1,
           currency: null,
         }}

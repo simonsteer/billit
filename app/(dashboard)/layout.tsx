@@ -10,7 +10,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
           <DashboardTab href="/account" text="Account" />
         </div>
       </nav>
-      <main className="border rounded-lg relative z-0 flex-1 bg-white px-24 pb-48 w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar">
+      <main className="border border-neutral-400 rounded-lg relative z-0 flex-1 bg-white px-24 pb-48 w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar shadow-lg">
         <span className="bg-gradient-to-b from-white to-transparent z-999 sticky top-0 block h-24" />
         {children}
       </main>

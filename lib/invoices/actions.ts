@@ -1,10 +1,12 @@
 'use server'
 
+import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm'
+import Decimal from 'decimal.js'
 import { auth0 } from '@/lib/auth'
 import { Currency } from '@/lib/currency/types'
 import { db } from '@/lib/db/client'
 import { invoices } from '@/lib/db/schema'
-import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm'
+import { getConversionRates } from '@/lib/currency/utils'
 
 type InvoicesOrderingField =
   | 'created_at'
@@ -53,4 +55,34 @@ export async function getInvoicesAction({
     .limit(GET_INVOICES_PAGE_SIZE)
     .where(and(...where))
     .orderBy(...order)
+}
+
+export async function getUpcomingDepositsTotalAction(currency: Currency) {
+  const session = await auth0.getSession()
+  const userId = session?.user.sub
+  if (!userId) return null
+
+  const conversion = await getConversionRates()
+
+  const upcoming = await db()
+    .select({
+      total: invoices.total,
+      currency: invoices.currency,
+    })
+    .from(invoices)
+    .where(isNotNull(invoices.date_paid))
+
+  const total = upcoming.reduce((acc, invoice) => {
+    const rateA = conversion.data.rates[currency]
+    const rateB = conversion.data.rates[invoice.currency]
+    const converted = Decimal.mul(invoice.total, Decimal.div(rateA, rateB))
+      .toDecimalPlaces(2)
+      .toNumber()
+
+    console.log(converted, invoice.currency, invoice.total)
+
+    return acc + converted
+  }, 0)
+
+  return { total, timestamp: conversion.data.timestamp }
 }

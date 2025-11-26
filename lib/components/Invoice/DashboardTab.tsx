@@ -12,11 +12,11 @@ export function DashboardTab({ text, href }: { text: string; href: string }) {
     <Link
       href={href}
       className={clsx(
-        'border-t border-x rounded-t-lg px-14 py-4',
+        'border-t border-x border-neutral-400 rounded-t-lg px-14 py-4',
         'relative after:w-full after:h-1 after:absolute after:-bottom-1 after:left-0',
         active
           ? 'bg-white after:bg-white'
-          : 'bg-neutral-100 after:bg-black border-neutral-400'
+          : 'bg-neutral-100 after:bg-neutral-400'
       )}
     >
       <span

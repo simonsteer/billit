@@ -1,3 +1,5 @@
+import { headers } from 'next/headers'
+
 /**
  * `acceptLanguage` should be the value of Accept-Language HTTP header.
  *
@@ -27,4 +29,9 @@ export function inferLocale(acceptLanguage?: string | null | undefined) {
     console.error(`Unable to parse locale from value "${acceptLanguage}"`)
     return 'en-US'
   }
+}
+
+export async function inferLocaleFromHeaders() {
+  const acceptLanguage = (await headers()).get('Accept-Language')
+  return inferLocale(acceptLanguage)
 }

@@ -1,13 +1,12 @@
-import { headers } from 'next/headers'
 import { renderToStream } from '@react-pdf/renderer'
 import { Invoice } from '@/lib/components'
-import { inferLocale } from '@/lib/i18n/utils'
+import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
 import { getAnonymousInvoice } from '@/lib/invoices/utils'
 import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
 
 export async function GET() {
   const invoice = getAnonymousInvoice()
-  const locale = inferLocale((await headers()).get('Accept-Language'))
+  const locale = await inferLocaleFromHeaders()
 
   const stream = await renderToStream(
     <Invoice
