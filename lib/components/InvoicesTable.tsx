@@ -6,6 +6,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
+import { ProcedureInput } from '@/lib/trpc/types'
 import { Pagination } from '@/lib/components'
 
 export function InvoicesTable({
@@ -13,7 +14,7 @@ export function InvoicesTable({
   locale,
   title,
 }: {
-  params: Exclude<Parameters<typeof trpc.getInvoices.useQuery>[0], symbol>
+  params: ProcedureInput<'getInvoices'>
   locale: string
   title: string
 }) {

@@ -92,6 +92,3 @@ export const trpcRouter = createTRPCRouter({
       return { total, timestamp: conversion.data.timestamp }
     }),
 })
-
-// export type definition of API
-export type TRPCRouter = typeof trpcRouter
