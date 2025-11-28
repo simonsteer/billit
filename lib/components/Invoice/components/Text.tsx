@@ -18,19 +18,17 @@ export function Text(props: TextProps) {
   switch (props.mode) {
     case 'dom':
       return (
-        <div style={style}>
-          <p className="whitespace-pre-line" style={style}>
-            {children}
-          </p>
-        </div>
+        <p className="whitespace-pre-line" style={style}>
+          {children}
+        </p>
       )
     case 'yoga':
       return (
         <View style={style}>
           {children.split('\n').map((line, index) => (
-            <View key={index} style={{ minHeight: style.lineHeight }}>
-              <YogaText break>{line}</YogaText>
-            </View>
+            <YogaText key={index} break style={{ minHeight: style.lineHeight }}>
+              {line}
+            </YogaText>
           ))}
         </View>
       )
