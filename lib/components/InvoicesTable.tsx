@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
 import { ReactNode, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
@@ -79,34 +80,36 @@ export function InvoicesTable({
               const status = paid ? 'paid' : overdue ? 'overdue' : 'pending'
 
               return (
-                <li
-                  key={invoice.id}
-                  className="flex group"
-                  data-status={status}
-                >
-                  <ColumnCell size="sm">{invoice.invoice_number}</ColumnCell>
-                  <ColumnCell size="lg">
-                    <span className="block w-215 truncate">
-                      {invoice.to_description.split('\n')[0]}
-                    </span>
-                  </ColumnCell>
-                  <ColumnCell size="sm">
-                    {dateIssued.toFormat('LLL dd, yyyy')}
-                  </ColumnCell>
-                  <ColumnCell size="sm">
-                    {dateDue.toFormat('LLL dd, yyyy')}
-                  </ColumnCell>
-                  <ColumnCell size="sm">
-                    {invoice.date_paid
-                      ? DateTime.fromSQL(invoice.date_paid).toFormat(
-                          'LLL dd, yyyy'
-                        )
-                      : '–––'}
-                  </ColumnCell>
-                  <ColumnCell size="sm">{invoice.currency}</ColumnCell>
-                  <ColumnCell size="md" fill>
-                    {formatCurrency(invoice.total)}
-                  </ColumnCell>
+                <li key={invoice.id}>
+                  <Link
+                    href={`/invoices/${invoice.id}`}
+                    className="flex group"
+                    data-status={status}
+                  >
+                    <ColumnCell size="sm">{invoice.invoice_number}</ColumnCell>
+                    <ColumnCell size="lg">
+                      <span className="block w-215 truncate">
+                        {invoice.to_description.split('\n')[0]}
+                      </span>
+                    </ColumnCell>
+                    <ColumnCell size="sm">
+                      {dateIssued.toFormat('LLL dd, yyyy')}
+                    </ColumnCell>
+                    <ColumnCell size="sm">
+                      {dateDue.toFormat('LLL dd, yyyy')}
+                    </ColumnCell>
+                    <ColumnCell size="sm">
+                      {invoice.date_paid
+                        ? DateTime.fromSQL(invoice.date_paid).toFormat(
+                            'LLL dd, yyyy'
+                          )
+                        : '–––'}
+                    </ColumnCell>
+                    <ColumnCell size="sm">{invoice.currency}</ColumnCell>
+                    <ColumnCell size="md" fill>
+                      {formatCurrency(invoice.total)}
+                    </ColumnCell>
+                  </Link>
                 </li>
               )
             })}

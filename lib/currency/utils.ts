@@ -1,4 +1,5 @@
-import { Currency } from '@/lib/currency/types'
+import BigNumber from 'bignumber.js'
+import { Currency, FinancialExchangeRates } from '@/lib/currency/types'
 import { db } from '@/lib/db/client'
 import { conversion_rates } from '@/lib/db/schema'
 
@@ -54,19 +55,39 @@ export const getCurrencyFormatter = ({
 }
 
 export async function updateConversionRates() {
-  await fetch(
+  const [fx] = await fetch(
     `https://openexchangerates.org/api/latest.json?app_id=${process.env.OXR_APP_ID}&base=USD`
   )
     .then(res => res.json())
-    .then(async data => {
-      await db()
+    .then(data =>
+      db()
         .insert(conversion_rates)
         .values({ id: 'singleton', data })
         .onConflictDoUpdate({ target: conversion_rates.id, set: { data } })
-    })
+        .returning()
+    )
+
+  return fx
 }
 
 export async function getConversionRates() {
   const [rates] = await db().select().from(conversion_rates)
   return rates
+}
+
+export function convertCurrency(
+  value: number,
+  fromCurrency: Currency,
+  toCurrency: Currency,
+  fx: FinancialExchangeRates
+) {
+  const rateA = fx.data.rates[toCurrency]
+  const rateB = fx.data.rates[fromCurrency]
+
+  const converted = BigNumber(value)
+    .multipliedBy(BigNumber(rateA).dividedBy(rateB))
+    .decimalPlaces(0)
+    .toNumber()
+
+  return converted
 }

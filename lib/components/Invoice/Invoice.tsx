@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
 import {
   LayoutFieldComponents,
@@ -70,7 +71,7 @@ export function Invoice({
           const item = invoice.line_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
-              {formatCurrency(item.price)}
+              {formatCurrency(BigNumber(item.price).shiftedBy(-2).toNumber())}
             </Text>
           )
         },
@@ -107,7 +108,7 @@ export function Invoice({
           const item = invoice.tax_items.find(item => item.id === itemKey)!
           return (
             <Text mode={mode} style={node.style}>
-              {formatCurrency(item.cost)}
+              {formatCurrency(BigNumber(item.cost).shiftedBy(-2).toNumber())}
             </Text>
           )
         },
@@ -115,12 +116,12 @@ export function Invoice({
     },
     subtotal: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {formatCurrency(invoice.subtotal)}
+        {formatCurrency(BigNumber(invoice.subtotal).shiftedBy(-2).toNumber())}
       </Text>
     ),
     total: ({ node }) => (
       <Text mode={mode} style={node.style}>
-        {formatCurrency(invoice.total)}
+        {formatCurrency(BigNumber(invoice.total).shiftedBy(-2).toNumber())}
       </Text>
     ),
   }

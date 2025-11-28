@@ -1,12 +1,4 @@
-import {
-  date,
-  index,
-  integer,
-  jsonb,
-  pgTable,
-  text,
-  numeric,
-} from 'drizzle-orm/pg-core'
+import { date, index, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { timestamps } from '@/lib/db/schema/mixins'
 import { currenciesEnum } from '@/lib/db/schema/enums'
@@ -48,8 +40,9 @@ export const invoices = pgTable(
         }[]
       >()
       .notNull(),
-    subtotal: numeric({ mode: 'number' }).notNull(),
-    total: numeric({ mode: 'number' }).notNull(),
+    subtotal: integer().notNull(),
+    total: integer().notNull(),
+    total_usd: integer().notNull(),
   },
   table => [index('user_id_idx').on(table.user_id)]
 )

@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
 import { nanoid } from 'nanoid'
-import { faker } from '@faker-js/faker'
 import BigNumber from 'bignumber.js'
 import { InvoiceJson, LineItemJson, TaxItemJson } from '@/lib/invoices/types'
 import {
@@ -9,7 +8,6 @@ import {
   DEFAULT_PAYMENT_DESCRIPTION,
   DEFAULT_TO_DESCRIPTION,
 } from '@/lib/invoices/vars'
-import { CURRENCIES } from '@/lib/currency/vars'
 
 export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
   const diff: Partial<InvoiceJson> = {}
@@ -105,16 +103,12 @@ export const getAnonymousInvoice = (): InvoiceJson => {
     updated_at: null,
     subtotal: 0,
     total: 0,
+    total_usd: 0,
   }
 }
 
-export const getLineItemCost = (lineItem: LineItemJson) => {
-  const cost = BigNumber(lineItem.price)
-    .multipliedBy(lineItem.quantity)
-    .decimalPlaces(2)
-    .toNumber()
-  return cost
-}
+export const getLineItemCost = (lineItem: LineItemJson) =>
+  BigNumber(lineItem.price).multipliedBy(lineItem.quantity).toNumber()
 
 export const getLineItemsSubtotal = (lineItems: LineItemJson[]) =>
   lineItems
@@ -122,7 +116,6 @@ export const getLineItemsSubtotal = (lineItems: LineItemJson[]) =>
       (subtotal, lineItem) => subtotal.plus(getLineItemCost(lineItem)),
       BigNumber(0)
     )
-    .decimalPlaces(2)
     .toNumber()
 
 export const getInvoiceTotal = (
@@ -130,8 +123,16 @@ export const getInvoiceTotal = (
   taxItems: TaxItemJson[]
 ) =>
   taxItems
-    .reduce((acc, n) => acc.plus(n.cost), BigNumber(lineItemsSubtotal))
-    .decimalPlaces(2)
+    .reduce(
+      (acc, tax) =>
+        acc.plus(
+          BigNumber(lineItemsSubtotal)
+            .multipliedBy(tax.amount)
+            .shiftedBy(-2)
+            .integerValue()
+        ),
+      BigNumber(lineItemsSubtotal)
+    )
     .toNumber()
 
 export const getDefaultLineItem = (): LineItemJson => ({
@@ -140,85 +141,3 @@ export const getDefaultLineItem = (): LineItemJson => ({
   quantity: 1,
   price: 0,
 })
-
-export function getFakeLineItem(): LineItemJson {
-  return {
-    id: nanoid(),
-    description: faker.commerce.productName(),
-    price: faker.number.float({
-      min: 5,
-      max: 500,
-      multipleOf: 0.05,
-    }),
-    quantity: faker.number.int({ min: 1, max: 10 }),
-  }
-}
-
-export function getFakeInvoice(userId: string): InvoiceJson {
-  const createdAt = faker.date.past({ years: 2 })
-
-  const updatedAt =
-    faker.helpers.maybe(() =>
-      faker.date.recent({ refDate: createdAt, days: 30 })
-    ) || null
-
-  const date_issued = faker.date.soon({ refDate: createdAt, days: 5 })
-
-  const date_due = faker.date.soon({ refDate: date_issued, days: 15 })
-
-  const date_paid =
-    faker.helpers.maybe(() =>
-      faker.date.soon({ refDate: date_due, days: 30 })
-    ) || null
-
-  const currency = CURRENCIES[Math.floor(Math.random() * CURRENCIES.length)]
-
-  const lineItems = [...Array(faker.number.int({ min: 1, max: 4 }))].map(
-    getFakeLineItem
-  )
-
-  const subtotal = getLineItemsSubtotal(lineItems)
-
-  const taxItems = [
-    {
-      id: nanoid(),
-      amount: 0.13,
-      text: 'HST',
-      cost: BigNumber(subtotal).multipliedBy(0.13).decimalPlaces(2).toNumber(),
-      label: null,
-    },
-  ]
-
-  const total = getInvoiceTotal(subtotal, taxItems)
-
-  return {
-    user_id: userId,
-    id: nanoid(),
-    to_description: [faker.company.name(), faker.location.streetAddress()].join(
-      '\n'
-    ),
-    from_description: [
-      faker.person.fullName(),
-      faker.company.name(),
-      faker.location.streetAddress(),
-    ].join('\n'),
-    payment_description: [
-      faker.finance.accountNumber(),
-      faker.location.streetAddress(),
-      faker.finance.iban(),
-      `\nPayable via PayPal to ${faker.internet.email()}`,
-    ].join('\n'),
-    created_at: DateTime.fromJSDate(createdAt).toSQL()!,
-    updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
-    date_issued: DateTime.fromJSDate(date_issued).startOf('day').toSQLDate()!,
-    date_due: DateTime.fromJSDate(date_due).startOf('day').toSQLDate()!,
-    date_paid:
-      date_paid && DateTime.fromJSDate(date_paid).startOf('day').toSQLDate(),
-    currency,
-    invoice_number: faker.helpers.rangeToNumber({ min: 0, max: 500 }),
-    line_items: lineItems,
-    tax_items: taxItems,
-    subtotal,
-    total,
-  }
-}

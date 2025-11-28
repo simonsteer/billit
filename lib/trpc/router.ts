@@ -3,7 +3,7 @@ import { and, asc, count, desc, eq, isNotNull, isNull } from 'drizzle-orm'
 import BigNumber from 'bignumber.js'
 import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
-import { getConversionRates } from '@/lib/currency/utils'
+import { convertCurrency, getConversionRates } from '@/lib/currency/utils'
 import { auth0 } from '@/lib/auth'
 import { invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
@@ -69,28 +69,21 @@ export const trpcRouter = createTRPCRouter({
       const userId = session?.user.sub
       if (!userId) return null
 
-      const conversion = await getConversionRates()
+      const fx = await getConversionRates()
 
       const upcoming = await db()
-        .select({
-          total: invoices.total,
-          currency: invoices.currency,
-        })
+        .select({ total_usd: invoices.total_usd, currency: invoices.currency })
         .from(invoices)
         .where(isNotNull(invoices.date_paid))
 
-      const total = upcoming.reduce((acc, invoice) => {
-        const rateA = conversion.data.rates[input.currency]
-        const rateB = conversion.data.rates[invoice.currency]
+      const sum = upcoming
+        .reduce((acc, invoice) => acc.plus(invoice.total_usd), BigNumber(0))
+        .toNumber()
 
-        const converted = BigNumber(invoice.total)
-          .multipliedBy(BigNumber(rateA).dividedBy(rateB))
-          .decimalPlaces(2)
-          .toNumber()
+      const total = BigNumber(convertCurrency(sum, 'USD', input.currency, fx))
+        .shiftedBy(-2)
+        .toNumber()
 
-        return acc + converted
-      }, 0)
-
-      return { total, timestamp: conversion.data.timestamp }
+      return { total, timestamp: fx.data.timestamp }
     }),
 })
