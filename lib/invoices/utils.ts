@@ -109,7 +109,7 @@ export const getAnonymousInvoice = (): InvoiceJson => {
 }
 
 export const getLineItemCost = (lineItem: LineItemJson) => {
-  const cost = new BigNumber(lineItem.price)
+  const cost = BigNumber(lineItem.price)
     .multipliedBy(lineItem.quantity)
     .decimalPlaces(2)
     .toNumber()
@@ -120,7 +120,7 @@ export const getLineItemsSubtotal = (lineItems: LineItemJson[]) =>
   lineItems
     .reduce(
       (subtotal, lineItem) => subtotal.plus(getLineItemCost(lineItem)),
-      new BigNumber(0)
+      BigNumber(0)
     )
     .decimalPlaces(2)
     .toNumber()
@@ -130,7 +130,7 @@ export const getInvoiceTotal = (
   taxItems: TaxItemJson[]
 ) =>
   taxItems
-    .reduce((acc, n) => acc.plus(n.cost), new BigNumber(lineItemsSubtotal))
+    .reduce((acc, n) => acc.plus(n.cost), BigNumber(lineItemsSubtotal))
     .decimalPlaces(2)
     .toNumber()
 
@@ -184,10 +184,7 @@ export function getFakeInvoice(userId: string): InvoiceJson {
       id: nanoid(),
       amount: 0.13,
       text: 'HST',
-      cost: new BigNumber(subtotal)
-        .multipliedBy(0.13)
-        .decimalPlaces(2)
-        .toNumber(),
+      cost: BigNumber(subtotal).multipliedBy(0.13).decimalPlaces(2).toNumber(),
       label: null,
     },
   ]

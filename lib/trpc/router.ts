@@ -83,8 +83,8 @@ export const trpcRouter = createTRPCRouter({
         const rateA = conversion.data.rates[input.currency]
         const rateB = conversion.data.rates[invoice.currency]
 
-        const converted = new BigNumber(invoice.total)
-          .multipliedBy(new BigNumber(rateA).dividedBy(rateB))
+        const converted = BigNumber(invoice.total)
+          .multipliedBy(BigNumber(rateA).dividedBy(rateB))
           .decimalPlaces(2)
           .toNumber()
 
