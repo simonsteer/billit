@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { nanoid } from 'nanoid'
 import { faker } from '@faker-js/faker'
-import Decimal from 'decimal.js'
+import BigNumber from 'bignumber.js'
 import { InvoiceJson, LineItemJson, TaxItemJson } from '@/lib/invoices/types'
 import {
   DEFAULT_FROM_DESCRIPTION,
@@ -109,25 +109,30 @@ export const getAnonymousInvoice = (): InvoiceJson => {
 }
 
 export const getLineItemCost = (lineItem: LineItemJson) => {
-  const cost = Decimal.mul(lineItem.price, lineItem.quantity).toDecimalPlaces(2)
+  const cost = new BigNumber(lineItem.price)
+    .multipliedBy(lineItem.quantity)
+    .decimalPlaces(2)
+    .toNumber()
   return cost
 }
 
 export const getLineItemsSubtotal = (lineItems: LineItemJson[]) =>
-  lineItems.reduce(
-    (subtotal, lineItem) =>
-      Decimal.add(subtotal, getLineItemCost(lineItem)).toNumber(),
-    0
-  )
+  lineItems
+    .reduce(
+      (subtotal, lineItem) => subtotal.plus(getLineItemCost(lineItem)),
+      new BigNumber(0)
+    )
+    .decimalPlaces(2)
+    .toNumber()
 
 export const getInvoiceTotal = (
   lineItemsSubtotal: number,
   taxItems: TaxItemJson[]
 ) =>
-  taxItems.reduce(
-    (acc, n) => Decimal.add(acc, n.cost).toNumber(),
-    lineItemsSubtotal
-  )
+  taxItems
+    .reduce((acc, n) => acc.plus(n.cost), new BigNumber(lineItemsSubtotal))
+    .decimalPlaces(2)
+    .toNumber()
 
 export const getDefaultLineItem = (): LineItemJson => ({
   description: DEFAULT_LINE_ITEM_DESCRIPTION,
@@ -179,7 +184,10 @@ export function getFakeInvoice(userId: string): InvoiceJson {
       id: nanoid(),
       amount: 0.13,
       text: 'HST',
-      cost: Decimal.mul(subtotal, 0.13).toDecimalPlaces(2).toNumber(),
+      cost: new BigNumber(subtotal)
+        .multipliedBy(0.13)
+        .decimalPlaces(2)
+        .toNumber(),
       label: null,
     },
   ]

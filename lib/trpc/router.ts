@@ -1,6 +1,6 @@
 import { type } from 'arktype'
 import { and, asc, count, desc, eq, isNotNull, isNull } from 'drizzle-orm'
-import Decimal from 'decimal.js'
+import BigNumber from 'bignumber.js'
 import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
 import { getConversionRates } from '@/lib/currency/utils'
@@ -82,8 +82,10 @@ export const trpcRouter = createTRPCRouter({
       const total = upcoming.reduce((acc, invoice) => {
         const rateA = conversion.data.rates[input.currency]
         const rateB = conversion.data.rates[invoice.currency]
-        const converted = Decimal.mul(invoice.total, Decimal.div(rateA, rateB))
-          .toDecimalPlaces(2)
+
+        const converted = new BigNumber(invoice.total)
+          .multipliedBy(new BigNumber(rateA).dividedBy(rateB))
+          .decimalPlaces(2)
           .toNumber()
 
         return acc + converted
