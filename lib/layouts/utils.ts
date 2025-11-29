@@ -44,7 +44,7 @@ export function parseNumericInvoiceNodeStyle(
 ) {
   return layoutMode === 'dom'
     ? `calc(var(--invoice-unit) * ${value})`
-    : `${value}px`
+    : `${value}pt`
 }
 
 export const root = (
@@ -92,7 +92,7 @@ export const image = (
 })
 
 export const field = (
-  { style = {}, value = 'fromDescription', template = null } = {} as Partial<
+  { style = {}, value = 'from_description', template = null } = {} as Partial<
     Pick<FieldLayoutNode, 'style' | 'value' | 'template'>
   >
 ): FieldLayoutNode => ({

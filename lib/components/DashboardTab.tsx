@@ -12,17 +12,17 @@ export function DashboardTab({ text, href }: { text: string; href: string }) {
     <Link
       href={href}
       className={clsx(
-        'border-t border-x border-neutral-400 rounded-t-lg px-14 py-4',
+        'border-t border-x border-neutral-300 rounded-t-lg px-14 py-4 bg-white',
         'relative after:w-full after:h-1 after:absolute after:-bottom-1 after:left-0',
-        active
-          ? 'bg-white after:bg-white'
-          : 'bg-neutral-100 after:bg-neutral-400'
+        active ? 'after:bg-white' : 'bg-neutral-100 after:bg-neutral-300'
       )}
     >
       <span
         className={clsx(
-          'text-16 leading-20 font-serif hover:underline',
-          active ? 'text-neutral-800' : 'text-neutral-500'
+          'text-16 leading-20 font-serif',
+          active
+            ? 'text-neutral-800'
+            : 'text-neutral-400 hover:text-neutral-800'
         )}
       >
         {text}

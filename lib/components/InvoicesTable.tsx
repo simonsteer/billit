@@ -1,5 +1,6 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
 import { ReactNode, useEffect, useState } from 'react'
@@ -107,7 +108,9 @@ export function InvoicesTable({
                     </ColumnCell>
                     <ColumnCell size="sm">{invoice.currency}</ColumnCell>
                     <ColumnCell size="md" fill>
-                      {formatCurrency(invoice.total)}
+                      {formatCurrency(
+                        BigNumber(invoice.total).shiftedBy(-2).toNumber()
+                      )}
                     </ColumnCell>
                   </Link>
                 </li>
