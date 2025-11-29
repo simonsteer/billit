@@ -1,12 +1,12 @@
 import { date, index, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
-import { timestamps } from '@/lib/db/schema/mixins'
+import { created_at_updated_at } from '@/lib/db/schema/mixins'
 import { currenciesEnum } from '@/lib/db/schema/enums'
 
 export const invoices = pgTable(
   'invoices',
   {
-    ...timestamps,
+    ...created_at_updated_at,
     id: text()
       .primaryKey()
       .$defaultFn(() => nanoid()),
