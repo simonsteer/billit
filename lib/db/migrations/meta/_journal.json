@@ -43,6 +43,13 @@
       "when": 1764541827025,
       "tag": "0005_silky_rattler",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1764542227957,
+      "tag": "0006_brainy_blacklash",
+      "breakpoints": true
     }
   ]
 }

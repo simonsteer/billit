@@ -28,11 +28,6 @@ function getFakeClient({ userId }: { userId: string }): ClientJson {
       faker.date.recent({ refDate: createdAt, days: 30 })
     ) || null
 
-  const notes =
-    faker.helpers.maybe(() =>
-      faker.lorem.paragraphs({ min: 1, max: 3 }, '\n\n')
-    ) || null
-
   return {
     id: nanoid(),
     user_id: userId,
@@ -44,7 +39,6 @@ function getFakeClient({ userId }: { userId: string }): ClientJson {
     ].join('\n'),
     created_at: DateTime.fromJSDate(createdAt).toSQL()!,
     updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
-    notes,
   }
 }
 

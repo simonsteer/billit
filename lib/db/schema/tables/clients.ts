@@ -14,7 +14,6 @@ export const clients = pgTable(
     user_id: text().notNull(),
     client_name: text().notNull(),
     client_information: text().notNull(),
-    notes: text(),
   },
   table => [index('index_clients_on_user_id').on(table.user_id)]
 )
