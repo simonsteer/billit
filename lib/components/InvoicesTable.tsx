@@ -36,11 +36,11 @@ export function InvoicesTable({
 
   return (
     <div>
-      <div className="flex items-center mb-12 gap-12">
-        <h2 className="text-28 leading-40 font-serif text-neutral-800">
+      <div className="flex items-end mb-12 gap-12">
+        <h2 className="text-28 leading-40 font-serif text-neutral-800 flex-1">
           {title}
         </h2>
-        <MixerHorizontalIcon className="w-18 h-18 text-neutral-400" />
+        <MixerHorizontalIcon className="shrink-0 w-18 h-18 text-neutral-400 mb-12" />
       </div>
       <div className="relative rounded-lg bg-neutral-50 border border-neutral-300 h-320 overflow-scroll no-scrollbar shadow-lg shadow-black/5">
         {isPending && (
@@ -49,11 +49,20 @@ export function InvoicesTable({
           </div>
         )}
         {!isPending && (!data || error) && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-16 leading-24">Something went wrong.</p>
+          <div className="absolute inset-0 p-24 flex items-center justify-center">
+            <p className="text-16 leading-24 text-center">
+              Something went wrong.
+            </p>
           </div>
         )}
-        {!isPending && data && (
+        {!isPending && data && data.invoices.length === 0 && (
+          <div className="absolute inset-0 p-24 flex items-center justify-center">
+            <p className="text-16 leading-24 text-center max-w-200">
+              No invoices to show with matching criteria.
+            </p>
+          </div>
+        )}
+        {!isPending && data && data.invoices.length > 0 && (
           <ul className="animate-fade-in">
             <li className="sticky top-0 flex bg-neutral-100">
               <ColumnHeading size="sm">Invoice number</ColumnHeading>
@@ -120,7 +129,7 @@ export function InvoicesTable({
         )}
       </div>
       <div className="flex items-center justify-center h-48">
-        {!!stale && (
+        {!!stale && stale.maxPage > 0 && (
           <Pagination
             className="animate-fade-in"
             currentPage={stale.currentPage}

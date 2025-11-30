@@ -15,7 +15,7 @@ export const trpcRouter = createTRPCRouter({
         page: 'number',
         paid: 'boolean | null',
         ordering: type([
-          "'created_at' | 'updated_at' | 'date_paid' | 'date_issued' | 'date_due' | 'invoice_number' | 'total'",
+          "'created_at' | 'updated_at' | 'date_paid' | 'date_issued' | 'date_due' | 'invoice_number' | 'total_usd'",
           '"asc" | "desc"',
         ]).or('null'),
         currency: CurrencySchema.or('null'),

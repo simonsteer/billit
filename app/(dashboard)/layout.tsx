@@ -7,7 +7,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
         <div className="flex gap-6">
           <DashboardTab href="/dashboard" text="Dashboard" />
           <DashboardTab href="/invoices" text="Invoices" />
-          <DashboardTab href="/account" text="Account" />
+          <DashboardTab href="/clients" text="Clients" />
         </div>
       </nav>
       <main className="border border-neutral-300 rounded-lg relative z-0 flex-1 bg-white px-24 w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar shadow-lg">

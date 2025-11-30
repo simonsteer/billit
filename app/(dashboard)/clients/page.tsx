@@ -7,9 +7,7 @@ export default async function Page() {
 
   return (
     <p className="text-16 leading-24 font-sans text-neutral-800 w-full max-w-2xl mb-32">
-      High-level overview of your billing health. See what payments are expected
-      in the near future, amounts that are overdue, historical views of paid
-      invoices, etc.
+      Manage your clients from here.
     </p>
   )
 }

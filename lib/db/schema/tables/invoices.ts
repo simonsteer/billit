@@ -1,7 +1,9 @@
+import { relations } from 'drizzle-orm'
 import { date, index, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { created_at_updated_at } from '@/lib/db/schema/mixins'
 import { currenciesEnum } from '@/lib/db/schema/enums'
+import { clients } from '@/lib/db/schema'
 
 export const invoices = pgTable(
   'invoices',
@@ -11,6 +13,9 @@ export const invoices = pgTable(
       .primaryKey()
       .$defaultFn(() => nanoid()),
     user_id: text().notNull(),
+    client_id: text()
+      .notNull()
+      .references(() => clients.id),
     from_description: text().notNull(),
     to_description: text().notNull(),
     payment_description: text().notNull(),
@@ -44,5 +49,12 @@ export const invoices = pgTable(
     total: integer().notNull(),
     total_usd: integer().notNull(),
   },
-  table => [index('user_id_idx').on(table.user_id)]
+  table => [index('index_invoices_on_user_id').on(table.user_id)]
 )
+
+export const invoices_relations = relations(invoices, ({ one }) => ({
+  client: one(clients, {
+    fields: [invoices.client_id],
+    references: [clients.id],
+  }),
+}))

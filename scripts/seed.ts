@@ -4,32 +4,59 @@ import { DateTime } from 'luxon'
 import BigNumber from 'bignumber.js'
 import { faker } from '@faker-js/faker'
 import { db } from '@/lib/db/client'
-import { invoices } from '@/lib/db/schema'
+import { clients, invoices } from '@/lib/db/schema'
 import { convertCurrency, updateConversionRates } from '@/lib/currency/utils'
 import { InvoiceJson, LineItemJson, TaxItemJson } from '@/lib/invoices/types'
 import { FinancialExchangeRates } from '@/lib/currency/types'
 import { CURRENCIES } from '@/lib/currency/vars'
 import { getInvoiceTotal, getLineItemsSubtotal } from '@/lib/invoices/utils'
+import { ClientJson } from '@/lib/clients/types'
 
 config({ path: '.env' })
 
-function getFakeLineItem(): LineItemJson {
+function getFakeData<T>(n: number, cb: (userId: string) => T) {
+  return process.env
+    .ADMIN_USER_IDS!.split(',')
+    .flatMap(userId => [...Array(n)].map(() => cb(userId)))
+}
+
+function getFakeClient({ userId }: { userId: string }): ClientJson {
+  const createdAt = faker.date.past({ years: 2 })
+
+  const updatedAt =
+    faker.helpers.maybe(() =>
+      faker.date.recent({ refDate: createdAt, days: 30 })
+    ) || null
+
+  const notes =
+    faker.helpers.maybe(() =>
+      faker.lorem.paragraphs({ min: 1, max: 3 }, '\n\n')
+    ) || null
+
   return {
     id: nanoid(),
-    description: faker.commerce.productName(),
-    price: faker.number.int({
-      min: 100,
-      max: 50000,
-      multipleOf: 5,
-    }),
-    quantity: faker.number.int({ min: 1, max: 10 }),
+    user_id: userId,
+    name: faker.company.name(),
+    contact_information: [
+      faker.location.streetAddress(),
+      `${faker.location.city()}, ${faker.location.state()}`,
+      faker.phone.number({ style: 'international' }),
+    ].join('\n'),
+    created_at: DateTime.fromJSDate(createdAt).toSQL()!,
+    updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
+    notes,
   }
 }
 
-function getFakeInvoice(
-  userId: string,
+function getFakeInvoice({
+  client,
+  userId,
+  fx,
+}: {
+  client: ClientJson
+  userId: string
   fx: FinancialExchangeRates
-): InvoiceJson {
+}): InvoiceJson {
   const createdAt = faker.date.past({ years: 2 })
 
   const updatedAt =
@@ -50,7 +77,18 @@ function getFakeInvoice(
 
   const lineItems: LineItemJson[] = [
     ...Array(faker.number.int({ min: 1, max: 4 })),
-  ].map(getFakeLineItem)
+  ].map(
+    (): LineItemJson => ({
+      id: nanoid(),
+      description: faker.commerce.productName(),
+      price: faker.number.int({
+        min: 100,
+        max: 50000,
+        multipleOf: 5,
+      }),
+      quantity: faker.number.int({ min: 1, max: 10 }),
+    })
+  )
 
   const subtotal = getLineItemsSubtotal(lineItems)
 
@@ -73,11 +111,10 @@ function getFakeInvoice(
   const total_usd = convertCurrency(total, currency, 'USD', fx)
 
   return {
-    user_id: userId,
     id: nanoid(),
-    to_description: [faker.company.name(), faker.location.streetAddress()].join(
-      '\n'
-    ),
+    user_id: userId,
+    to_description: [client.name, client.contact_information].join('\n'),
+    client_id: client.id,
     from_description: [
       faker.person.fullName(),
       faker.company.name(),
@@ -109,19 +146,21 @@ async function main() {
   // update currency conversion rates
   const fx = await updateConversionRates()
 
-  // delete invoices from development database
-  await db().delete(invoices)
+  // recreate fake clients in development database
+  const fakeClients = getFakeData(8, userId => getFakeClient({ userId }))
+  await db().delete(clients)
+  await db().insert(clients).values(fakeClients)
 
-  // bulk insert fake invoices for each admin user
-  await db()
-    .insert(invoices)
-    .values(
-      process.env
-        .ADMIN_USER_IDS!.split(',')
-        .flatMap(userId =>
-          [...Array(500)].map(() => getFakeInvoice(userId, fx))
-        )
-    )
+  // recreate fake invoices in development database
+  const fakeInvoices = getFakeData(500, userId =>
+    getFakeInvoice({
+      userId,
+      fx,
+      client: fakeClients[Math.floor(Math.random() * fakeClients.length)],
+    })
+  )
+  await db().delete(invoices)
+  await db().insert(invoices).values(fakeInvoices)
 }
 
 main()

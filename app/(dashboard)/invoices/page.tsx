@@ -32,11 +32,11 @@ export default async function Page() {
         }}
       />
       <InvoicesTable
-        title="Outstanding"
+        title="Outstanding & Most Valuable"
         locale={locale}
         params={{
           paid: false,
-          ordering: ['date_due', 'desc'],
+          ordering: ['total_usd', 'desc'],
           page: 1,
           currency: null,
         }}
