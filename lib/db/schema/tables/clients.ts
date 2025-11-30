@@ -12,8 +12,8 @@ export const clients = pgTable(
       .primaryKey()
       .$defaultFn(() => nanoid()),
     user_id: text().notNull(),
-    name: text().notNull(),
-    contact_information: text().notNull(),
+    client_name: text().notNull(),
+    client_information: text().notNull(),
     notes: text(),
   },
   table => [index('index_clients_on_user_id').on(table.user_id)]

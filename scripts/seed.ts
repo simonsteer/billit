@@ -36,8 +36,8 @@ function getFakeClient({ userId }: { userId: string }): ClientJson {
   return {
     id: nanoid(),
     user_id: userId,
-    name: faker.company.name(),
-    contact_information: [
+    client_name: faker.company.name(),
+    client_information: [
       faker.location.streetAddress(),
       `${faker.location.city()}, ${faker.location.state()}`,
       faker.phone.number({ style: 'international' }),
@@ -113,7 +113,7 @@ function getFakeInvoice({
   return {
     id: nanoid(),
     user_id: userId,
-    to_description: [client.name, client.contact_information].join('\n'),
+    to_description: [client.client_name, client.client_information].join('\n'),
     client_id: client.id,
     from_description: [
       faker.person.fullName(),
