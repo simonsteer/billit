@@ -1,6 +1,5 @@
 export * from './Invoice'
 export * from './InvoicesTable'
-export * from './NavLink'
 export * from './Pagination'
 export * from './QueryProvider'
 export * from './Spinner'
