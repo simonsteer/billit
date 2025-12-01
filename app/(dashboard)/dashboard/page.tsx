@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth0 } from '@/lib/auth'
 import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
-import { UpcomingDepositsTotal } from '@/lib/components'
 
 export default async function Page() {
   const session = await auth0.getSession()
@@ -16,7 +15,6 @@ export default async function Page() {
         expected in the near future, amounts that are overdue, historical views
         of paid invoices, etc.
       </p>
-      <UpcomingDepositsTotal currency="CAD" locale={locale} />
     </div>
   )
 }
