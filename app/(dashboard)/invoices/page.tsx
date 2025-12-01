@@ -19,6 +19,7 @@ export default async function Page() {
           ordering: ['date_due', 'desc'],
           page: 1,
           currency: null,
+          client_id: null,
         }}
       />
       <InvoicesTable
@@ -29,6 +30,7 @@ export default async function Page() {
           ordering: ['date_paid', 'desc'],
           page: 1,
           currency: null,
+          client_id: null,
         }}
       />
       <InvoicesTable
@@ -39,6 +41,7 @@ export default async function Page() {
           ordering: ['total_usd', 'desc'],
           page: 1,
           currency: null,
+          client_id: null,
         }}
       />
     </div>

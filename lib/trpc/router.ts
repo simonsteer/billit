@@ -5,10 +5,25 @@ import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
 import { convertCurrency, getConversionRates } from '@/lib/currency/utils'
 import { auth0 } from '@/lib/auth'
-import { invoices } from '@/lib/db/schema'
+import { clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
 
 export const trpcRouter = createTRPCRouter({
+  getClients: baseProcedure.query(async () => {
+    'use server'
+    const session = await auth0.getSession()
+    if (!session) return []
+
+    return await db()
+      .select({
+        id: clients.id,
+        client_name: clients.client_name,
+        invoices_count: count(invoices.id),
+      })
+      .from(clients)
+      .leftJoin(invoices, eq(invoices.client_id, clients.id))
+      .groupBy(clients.id, clients.client_name)
+  }),
   getInvoices: baseProcedure
     .input(
       type({
@@ -19,18 +34,19 @@ export const trpcRouter = createTRPCRouter({
           '"asc" | "desc"',
         ]).or('null'),
         currency: CurrencySchema.or('null'),
+        client_id: 'string | null',
       })
     )
-    .query(async ({ input: { currency, ordering, page, paid } }) => {
+    .query(async ({ input: { currency, ordering, page, paid, client_id } }) => {
       'use server'
       const session = await auth0.getSession()
-      const userId = session?.user.sub
-      if (!userId) return { invoices: [], currentPage: page, maxPage: page }
+      if (!session) return { invoices: [], currentPage: page, maxPage: page }
 
-      let where = []
+      let where = [eq(invoices.user_id, session.user.sub)]
       if (paid === true) where.push(isNotNull(invoices.date_paid))
       if (paid === false) where.push(isNull(invoices.date_paid))
       if (currency) where.push(eq(invoices.currency, currency))
+      if (client_id) where.push(eq(invoices.client_id, client_id))
 
       let order = []
       if (ordering) {
@@ -66,15 +82,19 @@ export const trpcRouter = createTRPCRouter({
       'use server'
 
       const session = await auth0.getSession()
-      const userId = session?.user.sub
-      if (!userId) return null
+      if (!session) return null
 
       const fx = await getConversionRates()
 
       const upcoming = await db()
         .select({ total_usd: invoices.total_usd, currency: invoices.currency })
         .from(invoices)
-        .where(isNotNull(invoices.date_paid))
+        .where(
+          and(
+            isNotNull(invoices.date_paid),
+            eq(invoices.user_id, session.user.sub)
+          )
+        )
 
       const sum = upcoming
         .reduce((acc, invoice) => acc.plus(invoice.total_usd), BigNumber(0))

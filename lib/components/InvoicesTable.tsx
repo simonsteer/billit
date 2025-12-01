@@ -9,7 +9,7 @@ import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
 import { ProcedureInput } from '@/lib/trpc/types'
-import { Pagination } from '@/lib/components'
+import { Pagination, Spinner } from '@/lib/components'
 
 export function InvoicesTable({
   params,
@@ -45,7 +45,7 @@ export function InvoicesTable({
       <div className="relative rounded-lg bg-neutral-50 border border-neutral-300 h-320 overflow-scroll no-scrollbar shadow-lg shadow-black/5">
         {isPending && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-24 h-24 rounded-full border-2 border-neutral-400 border-r-transparent animate-spin" />
+            <Spinner />
           </div>
         )}
         {!isPending && (!data || error) && (

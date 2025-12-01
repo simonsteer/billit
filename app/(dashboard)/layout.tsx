@@ -1,20 +1,24 @@
-import { DashboardTab } from '@/lib/components'
+import { NavLink } from '@/lib/components'
+import clsx from 'clsx'
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="p-12 flex flex-col fixed inset-0">
-      <nav className="relative z-1 px-24 w-full max-w-screen-xl mx-auto">
-        <div className="flex gap-6">
-          <DashboardTab href="/dashboard" text="Dashboard" />
-          <DashboardTab href="/invoices" text="Invoices" />
-          <DashboardTab href="/clients" text="Clients" />
+      <div className="border border-neutral-200 rounded-2xl relative z-0 flex-1 bg-white w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar shadow-lg">
+        <div className="flex h-full">
+          <nav className="w-248 shrink-0 py-12 px-24 flex flex-col overflow-y-scroll no-scrollbar h-full divide-y divide-neutral-200">
+            <NavLink href="/dashboard">Dashboard</NavLink>
+            <NavLink href="/invoices">Invoices</NavLink>
+            <NavLink href="/clients">Clients</NavLink>
+          </nav>
+          <span className="py-24 shrink-0">
+            <span className="block w-px h-full bg-neutral-200" />
+          </span>
+          <div className="flex-1 relative overflow-y-scroll no-scrollbar h-full p-24">
+            {children}
+          </div>
         </div>
-      </nav>
-      <main className="border border-neutral-300 rounded-lg relative z-0 flex-1 bg-white px-24 w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar shadow-lg">
-        <span className="bg-gradient-to-b from-white to-transparent z-999 sticky top-0 block h-24" />
-        {children}
-        <span className="bg-gradient-to-t from-white to-transparent z-999 sticky bottom-0 block h-24" />
-      </main>
+      </div>
     </div>
   )
 }
