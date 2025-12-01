@@ -196,9 +196,9 @@ function ColumnCell({
       className={clsx(
         'font-mono text-12 leading-18',
         'shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
-        'group-data-[status=pending]:bg-sky-50',
-        'group-data-[status=paid]:bg-green-50',
-        'group-data-[status=overdue]:bg-rose-50',
+        'group-data-[status=pending]:bg-sky-50 group-hover:group-data-[status=pending]:bg-sky-100',
+        'group-data-[status=paid]:bg-green-50 group-hover:group-data-[status=paid]:bg-green-100',
+        'group-data-[status=overdue]:bg-rose-50 group-hover:group-data-[status=overdue]:bg-rose-100',
         {
           ['min-w-120']: size === 'sm',
           ['min-w-180']: size === 'md',
