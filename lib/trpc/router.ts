@@ -1,9 +1,17 @@
 import { type } from 'arktype'
-import { and, asc, count, desc, eq, isNotNull, isNull } from 'drizzle-orm'
-import BigNumber from 'bignumber.js'
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  isNotNull,
+  isNull,
+  sql,
+  sum,
+} from 'drizzle-orm'
 import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
-import { convertCurrency, getConversionRates } from '@/lib/currency/utils'
 import { auth0 } from '@/lib/auth'
 import { clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
@@ -76,34 +84,35 @@ export const trpcRouter = createTRPCRouter({
         maxPage: Math.ceil(total / 50),
       }
     }),
-  getUpcomingDepositsTotal: baseProcedure
-    .input(type({ currency: CurrencySchema }))
-    .query(async ({ input }) => {
-      'use server'
+  getStuff: baseProcedure.query(async () => {
+    'use server'
+    const session = await auth0.getSession()
+    if (!session) return null
 
-      const session = await auth0.getSession()
-      if (!session) return null
+    const cte = db()
+      .$with('months')
+      .as(
+        db().select({
+          month: sql<string>`date_trunc('month', dd)::date`.as('month'),
+        }).from(sql`generate_series(
+                date_trunc('month', CURRENT_DATE - INTERVAL '11 months'),
+                date_trunc('month', CURRENT_DATE),
+                INTERVAL '1 month'
+              ) as dd`)
+      )
 
-      const fx = await getConversionRates()
-
-      const upcoming = await db()
-        .select({ total_usd: invoices.total_usd, currency: invoices.currency })
-        .from(invoices)
-        .where(
-          and(
-            isNotNull(invoices.date_paid),
-            eq(invoices.user_id, session.user.sub)
-          )
-        )
-
-      const sum = upcoming
-        .reduce((acc, invoice) => acc.plus(invoice.total_usd), BigNumber(0))
-        .toNumber()
-
-      const total = BigNumber(convertCurrency(sum, 'USD', input.currency, fx))
-        .shiftedBy(-2)
-        .toNumber()
-
-      return { total, timestamp: fx.data.timestamp }
-    }),
+    return await db()
+      .with(cte)
+      .select({
+        month: cte.month,
+        total_usd: sum(invoices.total_usd).mapWith(Number),
+      })
+      .from(cte)
+      .leftJoin(
+        invoices,
+        sql`date_trunc('month', ${invoices.date_paid}) = ${cte.month}`
+      )
+      .groupBy(cte.month)
+      .orderBy(cte.month)
+  }),
 })

@@ -1,12 +1,10 @@
 import { redirect } from 'next/navigation'
 import { auth0 } from '@/lib/auth'
-import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
+import { YearlyRevenueChart } from '@/lib/components'
 
 export default async function Page() {
   const session = await auth0.getSession()
   if (!session) redirect('/')
-
-  const locale = await inferLocaleFromHeaders()
 
   return (
     <div className="flex flex-col gap-40">
@@ -15,6 +13,7 @@ export default async function Page() {
         expected in the near future, amounts that are overdue, historical views
         of paid invoices, etc.
       </p>
+      <YearlyRevenueChart />
     </div>
   )
 }
