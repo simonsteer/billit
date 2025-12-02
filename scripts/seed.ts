@@ -4,13 +4,14 @@ import { DateTime } from 'luxon'
 import BigNumber from 'bignumber.js'
 import { faker } from '@faker-js/faker'
 import { db } from '@/lib/db/client'
-import { clients, invoices } from '@/lib/db/schema'
+import { business_profiles, clients, invoices } from '@/lib/db/schema'
 import { convertCurrency, updateConversionRates } from '@/lib/currency/utils'
 import { InvoiceJson, LineItemJson, TaxItemJson } from '@/lib/invoices/types'
 import { FinancialExchangeRates } from '@/lib/currency/types'
 import { CURRENCIES } from '@/lib/currency/vars'
 import { getInvoiceTotal, getLineItemsSubtotal } from '@/lib/invoices/utils'
 import { ClientJson } from '@/lib/clients/types'
+import { BusinessProfileJson } from '@/lib/business_profiles/types'
 
 config({ path: '.env' })
 
@@ -18,6 +19,34 @@ function getFakeData<T>(n: number, cb: (userId: string) => T) {
   return process.env
     .ADMIN_USER_IDS!.split(',')
     .flatMap(userId => [...Array(n)].map(() => cb(userId)))
+}
+
+function getFakeBusinessProfile({
+  userId,
+}: {
+  userId: string
+}): BusinessProfileJson {
+  const createdAt = faker.date.past({ years: 2 })
+
+  const updatedAt =
+    faker.helpers.maybe(() =>
+      faker.date.recent({ refDate: createdAt, days: 30 })
+    ) || null
+
+  return {
+    id: nanoid(),
+    user_id: userId,
+    business_name: faker.company.name(),
+    address_line_1: faker.location.streetAddress(),
+    address_line_2: faker.location.secondaryAddress(),
+    city: faker.location.city(),
+    country: faker.location.country(),
+    email: faker.internet.email(),
+    state: faker.location.state(),
+    zip_code: faker.location.zipCode(),
+    created_at: DateTime.fromJSDate(createdAt).toSQL()!,
+    updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
+  }
 }
 
 function getFakeClient({ userId }: { userId: string }): ClientJson {
@@ -32,23 +61,27 @@ function getFakeClient({ userId }: { userId: string }): ClientJson {
     id: nanoid(),
     user_id: userId,
     client_name: faker.company.name(),
-    client_information: [
-      faker.location.streetAddress(),
-      `${faker.location.city()}, ${faker.location.state()}`,
-      faker.phone.number({ style: 'international' }),
-    ].join('\n'),
+    address_line_1: faker.location.streetAddress(),
+    address_line_2: faker.location.secondaryAddress(),
+    city: faker.location.city(),
+    country: faker.location.country(),
+    email: faker.internet.email(),
+    state: faker.location.state(),
+    zip_code: faker.location.zipCode(),
     created_at: DateTime.fromJSDate(createdAt).toSQL()!,
     updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
   }
 }
 
 function getFakeInvoice({
-  client,
   userId,
+  client,
+  business_profile,
   fx,
 }: {
-  client: ClientJson
   userId: string
+  client: ClientJson
+  business_profile: BusinessProfileJson
   fx: FinancialExchangeRates
 }): InvoiceJson {
   const createdAt = faker.date.past({ years: 2 })
@@ -107,12 +140,18 @@ function getFakeInvoice({
   return {
     id: nanoid(),
     user_id: userId,
-    to_description: [client.client_name, client.client_information].join('\n'),
     client_id: client.id,
+    to_description: [
+      client.client_name,
+      `${client.address_line_1}, ${client.address_line_2}`,
+      `${client.city}, ${client.country}`,
+      client.zip_code,
+    ].join('\n'),
     from_description: [
-      faker.person.fullName(),
-      faker.company.name(),
-      faker.location.streetAddress(),
+      business_profile.business_name,
+      `${business_profile.address_line_1}, ${business_profile.address_line_2}`,
+      `${business_profile.city}, ${business_profile.country}`,
+      business_profile.zip_code,
     ].join('\n'),
     payment_description: [
       faker.finance.accountNumber(),
@@ -140,20 +179,36 @@ async function main() {
   // update currency conversion rates
   const fx = await updateConversionRates()
 
+  // empty tables
+  // invoices must be deleted first to not violate fk_constraint on clients table
+  await db().delete(invoices)
+  await db().delete(clients)
+  await db().delete(business_profiles)
+
+  // recreate fake business profiles in development database
+  const fakeBusinessProfiles = getFakeData(1, userId =>
+    getFakeBusinessProfile({ userId })
+  )
+  await db().insert(business_profiles).values(fakeBusinessProfiles)
+
   // recreate fake clients in development database
   const fakeClients = getFakeData(8, userId => getFakeClient({ userId }))
-  await db().delete(clients)
   await db().insert(clients).values(fakeClients)
 
   // recreate fake invoices in development database
-  const fakeInvoices = getFakeData(500, userId =>
-    getFakeInvoice({
+  const fakeInvoices = getFakeData(500, userId => {
+    const userClients = fakeClients.filter(client => client.user_id === userId)
+    const userBusinessProfile = fakeBusinessProfiles.find(
+      profile => profile.user_id === userId
+    )!
+
+    return getFakeInvoice({
       userId,
       fx,
-      client: fakeClients[Math.floor(Math.random() * fakeClients.length)],
+      client: userClients[Math.floor(Math.random() * userClients.length)],
+      business_profile: userBusinessProfile,
     })
-  )
-  await db().delete(invoices)
+  })
   await db().insert(invoices).values(fakeInvoices)
 }
 

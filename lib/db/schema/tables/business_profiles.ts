@@ -1,18 +1,16 @@
-import { relations } from 'drizzle-orm'
 import { index, pgTable, text } from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { created_at_updated_at } from '@/lib/db/schema/mixins'
-import { invoices } from './invoices'
 
-export const clients = pgTable(
-  'clients',
+export const business_profiles = pgTable(
+  'business_profiles',
   {
     ...created_at_updated_at,
     id: text()
       .primaryKey()
       .$defaultFn(() => nanoid()),
     user_id: text().notNull(),
-    client_name: text().notNull(),
+    business_name: text(),
     address_line_1: text(),
     address_line_2: text(),
     city: text(),
@@ -21,9 +19,5 @@ export const clients = pgTable(
     country: text(),
     email: text(),
   },
-  table => [index('index_clients_on_user_id').on(table.user_id)]
+  table => [index('index_business_profiles_on_user_id').on(table.user_id)]
 )
-
-export const clients_relations = relations(clients, ({ many }) => ({
-  invoices: many(invoices),
-}))

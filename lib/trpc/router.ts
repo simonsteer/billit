@@ -13,7 +13,7 @@ import {
 import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
 import { auth0 } from '@/lib/auth'
-import { clients, invoices } from '@/lib/db/schema'
+import { business_profiles, clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
 
 export const trpcRouter = createTRPCRouter({
@@ -115,5 +115,17 @@ export const trpcRouter = createTRPCRouter({
       .where(eq(invoices.user_id, session.user.sub))
       .groupBy(cte.month)
       .orderBy(cte.month)
+  }),
+  getBusinessProfile: baseProcedure.query(async () => {
+    'use server'
+    const session = await auth0.getSession()
+    if (!session) return { type: 'unauthenticated' }
+
+    const [profile = null] = await db()
+      .select()
+      .from(business_profiles)
+      .where(eq(business_profiles.user_id, session.user.sub))
+
+    return { type: 'success', profile }
   }),
 })
