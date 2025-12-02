@@ -1,5 +1,6 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
 import { Fragment, useId } from 'react'
 import { DateTime } from 'luxon'
 import { trpc } from '@/lib/trpc/react'
@@ -45,10 +46,8 @@ export function YearlyRevenueChart() {
 
 const VIEWPORT_WIDTH = 600
 const VIEWPORT_HEIGHT = 300
-const CHART_WIDTH = 520
-const CHART_HEIGHT = 260
-const CHART_X = VIEWPORT_WIDTH - CHART_WIDTH
-const CHART_Y = 15
+const CHART_HEIGHT = 265
+const CHART_Y = 10
 
 function RevenueChart({
   data,
@@ -58,15 +57,35 @@ function RevenueChart({
   const gradientId = useId()
   const maskId = useId()
 
-  const maxValue = Math.max(...data.map(d => d.total_usd)) * 1.1
-  const columnPadding = 0.15
-  const columnWidth = CHART_WIDTH / data.length
-  const barWidth = columnWidth * (1 - columnPadding * 2)
+  const maxValue = Math.max(...data.map(d => d.total_usd))
+  const maxDigits = maxValue.toString().length
+  const increment = BigNumber(0.1).shiftedBy(maxDigits).toNumber() / 2
+  const numIncrements = Math.ceil(maxValue / increment)
+  const chartMax = numIncrements * increment
 
   const formatCurrency = getCurrencyFormatter({
     currency: 'USD',
     locale: 'en-US',
   })
+
+  const increments = [...Array(numIncrements)]
+    .map((_, index) => index / numIncrements)
+    .concat(1)
+    .map((progress, index) => {
+      const formatted = formatCurrency(
+        BigNumber((numIncrements - index) * increment)
+          .shiftedBy(-2)
+          .toNumber()
+      )
+      return { progress, formatted, width: formatted.length * 6 }
+    })
+
+  const CHART_X = Math.max(...increments.map(i => i.width)) + 12
+  const CHART_WIDTH = VIEWPORT_WIDTH - CHART_X
+
+  const columnPadding = 0.15
+  const columnWidth = CHART_WIDTH / data.length
+  const barWidth = columnWidth * (1 - columnPadding * 2)
 
   return (
     <svg
@@ -74,39 +93,37 @@ function RevenueChart({
       viewBox={`0 0 ${VIEWPORT_WIDTH} ${VIEWPORT_HEIGHT}`}
       className="animate-fade-in overflow-visible"
     >
-      {[...Array(6)]
-        .map((_, index) => index / 6)
-        .concat(1)
-        .map((progress, index) => {
-          return (
-            <Fragment key={`value-line-${index}`}>
-              <line
-                x1={CHART_X}
-                y1={CHART_Y + progress * CHART_HEIGHT}
-                x2={CHART_X + CHART_WIDTH}
-                y2={CHART_Y + progress * CHART_HEIGHT}
-                strokeWidth={1}
-                strokeDasharray="3"
-                stroke="var(--color-neutral-300)"
-              />
-              <text
-                x={CHART_X - 12}
-                y={CHART_Y + progress * CHART_HEIGHT + 3.5}
-                className="text-10 font-mono"
-                fill="var(--color-neutral-500)"
-                textAnchor="end"
-              >
-                {formatCurrency((6 - index) * 10000)}
-              </text>
-            </Fragment>
-          )
-        })}
+      {increments.map(({ progress, formatted, width }, index) => {
+        return (
+          <Fragment key={`value-line-${index}`}>
+            <line
+              x1={CHART_X}
+              y1={CHART_Y + progress * CHART_HEIGHT}
+              x2={CHART_X + CHART_WIDTH}
+              y2={CHART_Y + progress * CHART_HEIGHT}
+              strokeWidth={1}
+              strokeDasharray="3"
+              stroke="var(--color-neutral-300)"
+            />
+            <text
+              x={CHART_X - 10}
+              y={CHART_Y + progress * CHART_HEIGHT + 3.5}
+              className="text-10 leading-14 font-mono"
+              textLength={width}
+              fill="var(--color-neutral-500)"
+              textAnchor="end"
+            >
+              {formatted}
+            </text>
+          </Fragment>
+        )
+      })}
       {data.map(({ month }, index) => (
         <text
           key={month}
           x={CHART_X + columnWidth / 2 + columnWidth * index}
           y={CHART_Y + CHART_HEIGHT + 20}
-          className="text-10 font-mono"
+          className="text-10 leading-14 font-mono"
           fill="var(--color-neutral-500)"
           textAnchor="middle"
         >
@@ -115,9 +132,9 @@ function RevenueChart({
       ))}
       <rect
         x={CHART_X}
-        y={CHART_Y}
+        y={CHART_Y + (CHART_HEIGHT - CHART_HEIGHT * (maxValue / chartMax))}
         width={CHART_WIDTH}
-        height={CHART_HEIGHT}
+        height={CHART_HEIGHT * (maxValue / chartMax)}
         fill={`url(#${gradientId})`}
         mask={`url(#${maskId})`}
       />
@@ -125,9 +142,9 @@ function RevenueChart({
         <linearGradient
           id={gradientId}
           x={CHART_X}
-          y={CHART_Y}
+          y={CHART_Y + (CHART_HEIGHT - CHART_HEIGHT * (maxValue / chartMax))}
           width={CHART_WIDTH}
-          height={CHART_HEIGHT}
+          height={CHART_HEIGHT * (maxValue / chartMax)}
           gradientTransform="rotate(90)"
         >
           <stop offset={0} stopColor="var(--color-emerald-300)" />
@@ -136,7 +153,7 @@ function RevenueChart({
         <mask id={maskId}>
           {data.map(({ month, total_usd }, index) => {
             const columnStart = CHART_X + (index / data.length) * CHART_WIDTH
-            const height = CHART_HEIGHT * (total_usd / maxValue)
+            const height = CHART_HEIGHT * (total_usd / chartMax)
             const left = columnStart + columnWidth * columnPadding
             const top = CHART_Y + CHART_HEIGHT - height
 
