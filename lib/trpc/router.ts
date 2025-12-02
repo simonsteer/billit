@@ -112,6 +112,7 @@ export const trpcRouter = createTRPCRouter({
         invoices,
         sql`date_trunc('month', ${invoices.date_paid}) = ${cte.month}`
       )
+      .where(eq(invoices.user_id, session.user.sub))
       .groupBy(cte.month)
       .orderBy(cte.month)
   }),
