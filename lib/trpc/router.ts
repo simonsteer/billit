@@ -84,7 +84,7 @@ export const trpcRouter = createTRPCRouter({
         maxPage: Math.ceil(total / 50),
       }
     }),
-  getRevenueYTD: baseProcedure.query(async () => {
+  getLast12MonthsRevenue: baseProcedure.query(async () => {
     'use server'
     const session = await auth0.getSession()
     if (!session) return null

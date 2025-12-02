@@ -1,3 +1,4 @@
+export * from './DashboardNavLink'
 export * from './Invoice'
 export * from './InvoicesTable'
 export * from './Pagination'

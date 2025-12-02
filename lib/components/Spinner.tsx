@@ -12,7 +12,7 @@ export function Spinner({
     <div
       style={style}
       className={clsx(
-        'w-24 h-24 rounded-full border-3 border-neutral-300 border-r-transparent animate-spin',
+        'w-24 h-24 rounded-full border-2 border-neutral-300 border-r-transparent animate-spin',
         className
       )}
     />

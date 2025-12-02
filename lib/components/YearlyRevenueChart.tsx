@@ -8,7 +8,7 @@ import { Spinner } from '@/lib/components'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 
 export function YearlyRevenueChart() {
-  const { data, isPending } = trpc.getRevenueYTD.useQuery()
+  const { data, isPending } = trpc.getLast12MonthsRevenue.useQuery()
 
   const end = DateTime.now().toFormat('LLL yyyy')
   const start = DateTime.now()
@@ -22,19 +22,22 @@ export function YearlyRevenueChart() {
         Revenue {start} – {end}
       </h2>
       <div className="p-12 rounded-lg bg-neutral-50 border border-neutral-300 shadow-lg shadow-black/5">
-        {isPending && (
-          <div className="w-full aspect-[2/1] flex items-center justify-center">
-            <Spinner />
+        {data ? (
+          <RevenueChart data={data} />
+        ) : (
+          <div
+            className="w-full flex items-center justify-center"
+            style={{ aspectRatio: VIEWPORT_WIDTH / VIEWPORT_HEIGHT }}
+          >
+            {isPending ? (
+              <Spinner />
+            ) : (
+              <p className="text-16 leading-24 text-center">
+                Something went wrong.
+              </p>
+            )}
           </div>
         )}
-        {!isPending && !data && (
-          <div className="w-full aspect-[2/1] flex items-center justify-center">
-            <p className="text-16 leading-24 text-center">
-              Something went wrong.
-            </p>
-          </div>
-        )}
-        {!isPending && data && <RevenueChart data={data} />}
       </div>
     </div>
   )
@@ -50,7 +53,7 @@ const CHART_Y = 15
 function RevenueChart({
   data,
 }: {
-  data: NonNullable<ProcedureOutput<'getRevenueYTD'>>
+  data: NonNullable<ProcedureOutput<'getLast12MonthsRevenue'>>
 }) {
   const gradientId = useId()
   const maskId = useId()
