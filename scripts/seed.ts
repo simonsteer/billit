@@ -144,14 +144,14 @@ function getFakeInvoice({
     to_description: [
       client.client_name,
       `${client.address_line_1}, ${client.address_line_2}`,
-      `${client.city}, ${client.country}`,
-      client.zip_code,
+      `${client.city}, ${client.state} ${client.zip_code}`,
+      client.country,
     ].join('\n'),
     from_description: [
       business_profile.business_name,
       `${business_profile.address_line_1}, ${business_profile.address_line_2}`,
-      `${business_profile.city}, ${business_profile.country}`,
-      business_profile.zip_code,
+      `${business_profile.city}, ${business_profile.state} ${business_profile.zip_code}`,
+      business_profile.country,
     ].join('\n'),
     payment_description: [
       faker.finance.accountNumber(),
