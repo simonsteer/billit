@@ -23,12 +23,12 @@ export function YearlyRevenueChart() {
       </h2>
       <div className="p-12 rounded-lg bg-neutral-50 border border-neutral-300 shadow-lg shadow-black/5">
         {isPending && (
-          <div className="w-full aspect-[6/4] flex items-center justify-center">
+          <div className="w-full aspect-[2/1] flex items-center justify-center">
             <Spinner />
           </div>
         )}
         {!isPending && !data && (
-          <div className="w-full aspect-[6/4] flex items-center justify-center">
+          <div className="w-full aspect-[2/1] flex items-center justify-center">
             <p className="text-16 leading-24 text-center">
               Something went wrong.
             </p>
