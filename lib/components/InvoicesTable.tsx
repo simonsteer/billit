@@ -91,32 +91,32 @@ export function InvoicesTable({
 
               return (
                 <li key={invoice.id}>
-                  <Link
-                    href={`/invoices/${invoice.id}`}
-                    className="flex group"
-                    data-status={status}
-                  >
-                    <ColumnCell size="sm">{invoice.invoice_number}</ColumnCell>
-                    <ColumnCell size="lg">
+                  <Link href={`/invoices/${invoice.id}`} className="flex group">
+                    <ColumnCell status={status} size="sm">
+                      {invoice.invoice_number}
+                    </ColumnCell>
+                    <ColumnCell status={status} size="lg">
                       <span className="block w-215 truncate">
                         {invoice.to_description.split('\n')[0]}
                       </span>
                     </ColumnCell>
-                    <ColumnCell size="sm">
+                    <ColumnCell status={status} size="sm">
                       {dateIssued.toFormat('LLL dd, yyyy')}
                     </ColumnCell>
-                    <ColumnCell size="sm">
+                    <ColumnCell status={status} size="sm">
                       {dateDue.toFormat('LLL dd, yyyy')}
                     </ColumnCell>
-                    <ColumnCell size="sm">
+                    <ColumnCell status={status} size="sm">
                       {invoice.date_paid
                         ? DateTime.fromSQL(invoice.date_paid).toFormat(
                             'LLL dd, yyyy'
                           )
                         : '–––'}
                     </ColumnCell>
-                    <ColumnCell size="sm">{invoice.currency}</ColumnCell>
-                    <ColumnCell size="md" fill>
+                    <ColumnCell status={status} size="sm">
+                      {invoice.currency}
+                    </ColumnCell>
+                    <ColumnCell status={status} size="md" fill>
                       {formatCurrency(
                         BigNumber(invoice.total).shiftedBy(-2).toNumber()
                       )}
@@ -185,30 +185,31 @@ function ColumnCell({
   size,
   className,
   fill,
+  status,
 }: {
   children: ReactNode
   size: 'sm' | 'md' | 'lg'
   className?: string
   fill?: boolean
+  status: 'pending' | 'paid' | 'overdue'
 }) {
   return (
     <span
       className={clsx(
-        'font-mono text-12 leading-18',
-        'shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
-        'group-data-[status=pending]:bg-sky-50 group-hover:group-data-[status=pending]:bg-sky-100',
-        'group-data-[status=paid]:bg-green-50 group-hover:group-data-[status=paid]:bg-green-100',
-        'group-data-[status=overdue]:bg-rose-50 group-hover:group-data-[status=overdue]:bg-rose-100',
+        'font-mono text-12 leading-18 shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
         {
           ['min-w-120']: size === 'sm',
           ['min-w-180']: size === 'md',
           ['min-w-240']: size === 'lg',
           ['flex-1']: fill,
+          ['bg-green-50']: status === 'paid',
+          ['bg-sky-50']: status === 'pending',
+          ['bg-rose-50']: status === 'overdue',
         },
         className
       )}
     >
-      {children}
+      <span className="group-hover:opacity-50">{children}</span>
     </span>
   )
 }
