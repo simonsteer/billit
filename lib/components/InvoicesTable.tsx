@@ -64,7 +64,7 @@ export function InvoicesTable({
         )}
         {!isPending && data && data.invoices.length > 0 && (
           <ul className="animate-fade-in">
-            <li className="sticky top-0 flex bg-neutral-100">
+            <li className="sticky top-0 flex bg-neutral-100 z-50">
               <ColumnHeading size="sm">Invoice number</ColumnHeading>
               <ColumnHeading size="lg">Billed to</ColumnHeading>
               <ColumnHeading size="sm">Date issued</ColumnHeading>
@@ -90,7 +90,7 @@ export function InvoicesTable({
               const status = paid ? 'paid' : overdue ? 'overdue' : 'pending'
 
               return (
-                <li key={invoice.id}>
+                <li key={invoice.id} className="animate-fade-in">
                   <Link href={`/invoices/${invoice.id}`} className="flex group">
                     <ColumnCell status={status} size="sm">
                       {invoice.invoice_number}
