@@ -42,7 +42,7 @@ export function InvoicesTable({
         </h2>
         <MixerHorizontalIcon className="shrink-0 w-18 h-18 text-neutral-400 mb-12" />
       </div>
-      <div className="relative rounded-lg bg-neutral-50 border border-neutral-300 h-320 overflow-scroll no-scrollbar shadow-lg shadow-black/5">
+      <div className="relative rounded-lg bg-white border border-neutral-300 h-320 overflow-scroll no-scrollbar">
         {isPending && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Spinner />
@@ -92,31 +92,27 @@ export function InvoicesTable({
               return (
                 <li key={invoice.id} className="animate-fade-in">
                   <Link href={`/invoices/${invoice.id}`} className="flex group">
-                    <ColumnCell status={status} size="sm">
-                      {invoice.invoice_number}
-                    </ColumnCell>
-                    <ColumnCell status={status} size="lg">
+                    <ColumnCell size="sm">{invoice.invoice_number}</ColumnCell>
+                    <ColumnCell size="lg">
                       <span className="block w-215 truncate">
                         {invoice.to_description.split('\n')[0]}
                       </span>
                     </ColumnCell>
-                    <ColumnCell status={status} size="sm">
+                    <ColumnCell size="sm">
                       {dateIssued.toFormat('LLL dd, yyyy')}
                     </ColumnCell>
-                    <ColumnCell status={status} size="sm">
+                    <ColumnCell size="sm">
                       {dateDue.toFormat('LLL dd, yyyy')}
                     </ColumnCell>
-                    <ColumnCell status={status} size="sm">
+                    <ColumnCell size="sm">
                       {invoice.date_paid
                         ? DateTime.fromSQL(invoice.date_paid).toFormat(
                             'LLL dd, yyyy'
                           )
                         : '–––'}
                     </ColumnCell>
-                    <ColumnCell status={status} size="sm">
-                      {invoice.currency}
-                    </ColumnCell>
-                    <ColumnCell status={status} size="md" fill>
+                    <ColumnCell size="sm">{invoice.currency}</ColumnCell>
+                    <ColumnCell size="md" fill>
                       {formatCurrency(
                         BigNumber(invoice.total).shiftedBy(-2).toNumber()
                       )}
@@ -165,7 +161,7 @@ function ColumnHeading({
     <span
       className={clsx(
         'font-serif text-14 leading-20',
-        'bg-neutral-50 shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
+        'bg-white shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
         {
           ['min-w-120']: size === 'sm',
           ['min-w-180']: size === 'md',
@@ -185,13 +181,11 @@ function ColumnCell({
   size,
   className,
   fill,
-  status,
 }: {
   children: ReactNode
   size: 'sm' | 'md' | 'lg'
   className?: string
   fill?: boolean
-  status: 'pending' | 'paid' | 'overdue'
 }) {
   return (
     <span
@@ -202,9 +196,6 @@ function ColumnCell({
           ['min-w-180']: size === 'md',
           ['min-w-240']: size === 'lg',
           ['flex-1']: fill,
-          ['bg-green-50']: status === 'paid',
-          ['bg-sky-50']: status === 'pending',
-          ['bg-rose-50']: status === 'overdue',
         },
         className
       )}
