@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export class SimpleQueue {
   private items: (() => Promise<void>)[] = []
 
@@ -20,4 +22,14 @@ export class SimpleQueue {
     await next()
     this.flushing = false
   }
+}
+
+export function usePartialState<T>(initial: T) {
+  const [state, _setState] = useState(initial)
+
+  function setState(updates: Partial<T>) {
+    _setState({ ...state, ...updates })
+  }
+
+  return [state, setState] as const
 }

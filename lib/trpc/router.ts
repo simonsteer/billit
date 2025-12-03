@@ -15,6 +15,7 @@ import { CurrencySchema } from '@/lib/currency/types'
 import { auth0 } from '@/lib/auth'
 import { business_profiles, clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
+import { BusinessProfileUpdateSchema } from '@/lib/business_profiles/types'
 
 export const trpcRouter = createTRPCRouter({
   getClients: baseProcedure.query(async () => {
@@ -119,13 +120,40 @@ export const trpcRouter = createTRPCRouter({
   getBusinessProfile: baseProcedure.query(async () => {
     'use server'
     const session = await auth0.getSession()
-    if (!session) return { type: 'unauthenticated' }
+    if (!session) return null
 
-    const [profile = null] = await db()
+    let [profile = null] = await db()
       .select()
       .from(business_profiles)
       .where(eq(business_profiles.user_id, session.user.sub))
 
-    return { type: 'success', profile }
+    if (!profile) {
+      ;[profile] = await db()
+        .insert(business_profiles)
+        .values({ user_id: session.user.sub })
+        .returning()
+    }
+
+    return profile
   }),
+  updateBusinessProfile: baseProcedure
+    .input(type({ id: 'string', updates: BusinessProfileUpdateSchema }))
+    .mutation(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return null
+
+      const [profile = null] = await db()
+        .update(business_profiles)
+        .set(input.updates)
+        .where(
+          and(
+            eq(business_profiles.user_id, session.user.sub),
+            eq(business_profiles.id, input.id)
+          )
+        )
+        .returning()
+
+      return profile
+    }),
 })
