@@ -10,7 +10,7 @@ import { DashboardNavLink } from '@/lib/components'
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="p-12 flex flex-col fixed inset-0">
-      <div className="border border-neutral-200 rounded-2xl relative z-0 flex-1 bg-white w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar shadow-lg">
+      <div className="relative border border-neutral-200 rounded-2xl relative z-0 flex-1 bg-white w-full max-w-screen-xl mx-auto overflow-y-scroll no-scrollbar shadow-lg">
         <div className="flex h-full">
           <nav className="w-248 shrink-0 py-12 px-24 flex flex-col overflow-y-scroll no-scrollbar h-full divide-y divide-neutral-200">
             <DashboardNavLink icon={<DashboardIcon />} href="/dashboard">
@@ -25,8 +25,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
             <DashboardNavLink icon={<PersonIcon />} href="/clients">
               Clients
             </DashboardNavLink>
-            <DashboardNavLink icon={<GearIcon />} href="/account">
-              Account
+            <DashboardNavLink icon={<GearIcon />} href="/settings">
+              Settings
             </DashboardNavLink>
           </nav>
           <span className="py-24 shrink-0">
