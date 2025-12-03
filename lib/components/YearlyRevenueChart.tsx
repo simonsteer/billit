@@ -22,7 +22,7 @@ export function YearlyRevenueChart() {
       <h2 className="text-28 leading-40 font-serif text-neutral-800 mb-12">
         Revenue {start} – {end}
       </h2>
-      <div className="p-12 rounded-lg bg-neutral-50 border border-neutral-300 shadow-lg shadow-black/5">
+      <div className="p-12 rounded-lg border border-neutral-300">
         {data ? (
           <RevenueChart data={data} />
         ) : (
@@ -54,9 +54,6 @@ function RevenueChart({
 }: {
   data: NonNullable<ProcedureOutput<'getLast12MonthsRevenue'>>
 }) {
-  const gradientId = useId()
-  const maskId = useId()
-
   const maxValue = Math.max(...data.map(d => d.total_usd))
   const maxDigits = maxValue.toString().length
   const increment = BigNumber(0.1).shiftedBy(maxDigits).toNumber() / 2
@@ -120,7 +117,7 @@ function RevenueChart({
       })}
       {data.map(({ month }, index) => (
         <text
-          key={month}
+          key={`text-${month}`}
           x={CHART_X + columnWidth / 2 + columnWidth * index}
           y={CHART_Y + CHART_HEIGHT + 20}
           className="text-10 leading-14 font-mono"
@@ -130,62 +127,39 @@ function RevenueChart({
           {DateTime.fromSQL(month).toFormat('LLL')}
         </text>
       ))}
-      <rect
-        x={CHART_X}
-        y={CHART_Y + (CHART_HEIGHT - CHART_HEIGHT * (maxValue / chartMax))}
-        width={CHART_WIDTH}
-        height={CHART_HEIGHT * (maxValue / chartMax)}
-        fill={`url(#${gradientId})`}
-        mask={`url(#${maskId})`}
-      />
-      <defs>
-        <linearGradient
-          id={gradientId}
-          x={CHART_X}
-          y={CHART_Y + (CHART_HEIGHT - CHART_HEIGHT * (maxValue / chartMax))}
-          width={CHART_WIDTH}
-          height={CHART_HEIGHT * (maxValue / chartMax)}
-          gradientTransform="rotate(90)"
-        >
-          <stop offset={0} stopColor="var(--color-emerald-300)" />
-          <stop offset={CHART_HEIGHT} stopColor="var(--color-lime-100)" />
-        </linearGradient>
-        <mask id={maskId}>
-          {data.map(({ month, total_usd }, index) => {
-            const columnStart = CHART_X + (index / data.length) * CHART_WIDTH
-            const height = CHART_HEIGHT * (total_usd / chartMax)
-            const left = columnStart + columnWidth * columnPadding
-            const top = CHART_Y + CHART_HEIGHT - height
+      {data.map(({ month, total_usd }, index) => {
+        const columnStart = CHART_X + (index / data.length) * CHART_WIDTH
+        const height = CHART_HEIGHT * (total_usd / chartMax)
+        const left = columnStart + columnWidth * columnPadding
+        const top = CHART_Y + CHART_HEIGHT - height
 
-            return (
-              <rect
-                key={month}
-                x={left}
-                y={top}
-                width={barWidth}
-                height={height}
-                transform="scale(1,0)"
-                rx={3}
-                ry={3}
-                fill="white"
-                style={{ transformOrigin: 'bottom' }}
-              >
-                <animateTransform
-                  attributeName="transform"
-                  type="scale"
-                  values={`1 0;1 1`}
-                  keySplines="0.1 0.75 0.25 1"
-                  keyTimes="0;1"
-                  calcMode="spline"
-                  dur="0.5s"
-                  begin={index * 0.025 + 's'}
-                  fill="freeze"
-                />
-              </rect>
-            )
-          })}
-        </mask>
-      </defs>
+        return (
+          <rect
+            key={`bar-${month}`}
+            x={left}
+            y={top}
+            width={barWidth}
+            height={height}
+            transform="scale(1,0)"
+            rx={3}
+            ry={3}
+            fill="var(--color-neutral-300)"
+            style={{ transformOrigin: 'bottom' }}
+          >
+            <animateTransform
+              attributeName="transform"
+              type="scale"
+              values={`1 0;1 1`}
+              keySplines="0.1 0.75 0.25 1"
+              keyTimes="0;1"
+              calcMode="spline"
+              dur="0.5s"
+              begin={index * 0.025 + 's'}
+              fill="freeze"
+            />
+          </rect>
+        )
+      })}
     </svg>
   )
 }
