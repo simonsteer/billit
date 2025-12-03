@@ -1,14 +1,14 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { Fragment, useId } from 'react'
+import { Fragment } from 'react'
 import { DateTime } from 'luxon'
 import { trpc } from '@/lib/trpc/react'
 import { ProcedureOutput } from '@/lib/trpc/types'
 import { Spinner } from '@/lib/components'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 
-export function YearlyRevenueChart() {
+export function YearlyRevenueChart({ locale }: { locale: string }) {
   const { data, isPending } = trpc.getLast12MonthsRevenue.useQuery()
 
   const end = DateTime.now().toFormat('LLL yyyy')
@@ -24,7 +24,7 @@ export function YearlyRevenueChart() {
       </h2>
       <div className="p-12 rounded-lg border border-neutral-300">
         {data ? (
-          <RevenueChart data={data} />
+          <RevenueChart data={data} locale={locale} />
         ) : (
           <div
             className="w-full flex items-center justify-center"
@@ -51,8 +51,10 @@ const CHART_Y = 10
 
 function RevenueChart({
   data,
+  locale,
 }: {
   data: NonNullable<ProcedureOutput<'getLast12MonthsRevenue'>>
+  locale: string
 }) {
   const maxValue = Math.max(...data.map(d => d.total_usd))
   const maxDigits = maxValue.toString().length
@@ -62,7 +64,7 @@ function RevenueChart({
 
   const formatCurrency = getCurrencyFormatter({
     currency: 'USD',
-    locale: 'en-US',
+    locale,
   })
 
   const increments = [...Array(numIncrements)]
