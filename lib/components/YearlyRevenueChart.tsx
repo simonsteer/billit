@@ -189,5 +189,5 @@ function computeYAxis(
     }
   })
 
-  return values
+  return values.toReversed()
 }
