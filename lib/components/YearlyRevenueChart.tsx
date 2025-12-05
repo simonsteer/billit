@@ -56,28 +56,14 @@ function RevenueChart({
   data: NonNullable<ProcedureOutput<'getLast12MonthsRevenue'>>
   locale: string
 }) {
-  const maxValue = Math.max(...data.map(d => d.total_usd))
-  const maxDigits = maxValue.toString().length
-  const increment = BigNumber(0.1).shiftedBy(maxDigits).toNumber() / 2
-  const numIncrements = Math.ceil(maxValue / increment)
-  const chartMax = numIncrements * increment
-
   const formatCurrency = getCurrencyFormatter({
     currency: 'USD',
     locale,
   })
 
-  const increments = [...Array(numIncrements)]
-    .map((_, index) => index / numIncrements)
-    .concat(1)
-    .map((progress, index) => {
-      const formatted = formatCurrency(
-        BigNumber((numIncrements - index) * increment)
-          .shiftedBy(-2)
-          .toNumber()
-      )
-      return { progress, formatted, width: formatted.length * 6 }
-    })
+  const maxValue = Math.max(...data.map(d => d.total_usd))
+  const increments = computeYAxis(maxValue, formatCurrency)
+  const chartMax = Math.max(...increments.map(i => i.value))
 
   const CHART_X = Math.max(...increments.map(i => i.width)) + 12
   const CHART_WIDTH = VIEWPORT_WIDTH - CHART_X
@@ -164,4 +150,41 @@ function RevenueChart({
       })}
     </svg>
   )
+}
+
+function computeYAxis(
+  maxValue: number,
+  formatCurrency: (value: number) => string
+) {
+  const raw = maxValue / 5
+  const magnitude = 10 ** Math.floor(Math.log10(raw))
+  const normalized = raw / magnitude
+
+  const step =
+    (() => {
+      if (normalized <= 1) return 1
+      if (normalized <= 2) return 2
+      if (normalized <= 2.5) return 2.5
+      if (normalized <= 5) return 5
+      return 10
+    })() * magnitude
+
+  const max = Math.ceil(maxValue / step) * step
+
+  const ticks = Array.from(
+    { length: Math.floor(max / step) + 1 },
+    (_, i) => i * step
+  )
+
+  const values = ticks.map((value, index) => {
+    const formatted = formatCurrency(BigNumber(value).shiftedBy(-2).toNumber())
+    return {
+      value,
+      progress: 1 - index / (ticks.length - 1),
+      formatted,
+      width: formatted.length * 6,
+    }
+  })
+
+  return values
 }
