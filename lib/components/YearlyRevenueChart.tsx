@@ -100,6 +100,7 @@ function RevenueChart({
                 strokeWidth={1}
                 strokeDasharray="3"
                 stroke="var(--color-neutral-300)"
+                vectorEffect="non-scaling-stroke"
               />
             ))}
             {data.map(({ month, total_usd }, index) => {
