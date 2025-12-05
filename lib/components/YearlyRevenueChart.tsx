@@ -1,7 +1,6 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { Fragment } from 'react'
 import { DateTime } from 'luxon'
 import { trpc } from '@/lib/trpc/react'
 import { ProcedureOutput } from '@/lib/trpc/types'
@@ -22,14 +21,14 @@ export function YearlyRevenueChart({ locale }: { locale: string }) {
       <h2 className="text-28 leading-40 font-serif text-neutral-800 mb-12">
         Revenue {start} – {end}
       </h2>
-      <div className="p-12 rounded-lg border border-neutral-300">
+      <div
+        className="p-12 rounded-lg border border-neutral-300"
+        style={{ aspectRatio: VIEWPORT_WIDTH / VIEWPORT_HEIGHT }}
+      >
         {data ? (
           <RevenueChart data={data} locale={locale} />
         ) : (
-          <div
-            className="w-full flex items-center justify-center"
-            style={{ aspectRatio: VIEWPORT_WIDTH / VIEWPORT_HEIGHT }}
-          >
+          <div className="w-full h-full flex items-center justify-center">
             {isPending ? (
               <Spinner />
             ) : (
@@ -84,11 +83,12 @@ function RevenueChart({
             </p>
           ))}
         </div>
-        <div className="flex-1 py-9">
+        <div className="flex-1 pt-9">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox={`0 0 ${VIEWPORT_WIDTH} ${VIEWPORT_HEIGHT}`}
-            className="animate-fade-in overflow-visible"
+            className="animate-fade-in overflow-visible h-full w-full"
+            preserveAspectRatio="none"
           >
             {yAxis.map(({ progress }, index) => (
               <line
@@ -115,10 +115,8 @@ function RevenueChart({
                   x={left}
                   y={top}
                   width={barWidth}
-                  height={height}
+                  height={height + 0.5}
                   transform="scale(1,0)"
-                  rx={3}
-                  ry={3}
                   fill="var(--color-neutral-300)"
                   style={{ transformOrigin: 'bottom' }}
                 >
@@ -141,7 +139,7 @@ function RevenueChart({
       </div>
       <div
         style={{ marginLeft: yAxisWidth + 12 }}
-        className="flex justify-around mt-3"
+        className="flex justify-around items-center mt-9"
       >
         {data.map(d => (
           <p
