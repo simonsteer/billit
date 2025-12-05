@@ -46,8 +46,6 @@ export function YearlyRevenueChart({ locale }: { locale: string }) {
 
 const VIEWPORT_WIDTH = 600
 const VIEWPORT_HEIGHT = 300
-const CHART_HEIGHT = 265
-const CHART_Y = 10
 
 function RevenueChart({
   data,
@@ -62,93 +60,98 @@ function RevenueChart({
   })
 
   const maxValue = Math.max(...data.map(d => d.total_usd))
-  const increments = computeYAxis(maxValue, formatCurrency)
-  const chartMax = Math.max(...increments.map(i => i.value))
-
-  const CHART_X = Math.max(...increments.map(i => i.width)) + 12
-  const CHART_WIDTH = VIEWPORT_WIDTH - CHART_X
+  const yAxis = computeYAxis(maxValue, formatCurrency)
+  const yAxisWidth = Math.max(...yAxis.map(y => y.width))
+  const chartMax = Math.max(...yAxis.map(i => i.value))
 
   const columnPadding = 0.15
-  const columnWidth = CHART_WIDTH / data.length
+  const columnWidth = VIEWPORT_WIDTH / data.length
   const barWidth = columnWidth * (1 - columnPadding * 2)
 
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox={`0 0 ${VIEWPORT_WIDTH} ${VIEWPORT_HEIGHT}`}
-      className="animate-fade-in overflow-visible"
-    >
-      {increments.map(({ progress, formatted, width }, index) => {
-        return (
-          <Fragment key={`value-line-${index}`}>
-            <line
-              x1={CHART_X}
-              y1={CHART_Y + progress * CHART_HEIGHT}
-              x2={CHART_X + CHART_WIDTH}
-              y2={CHART_Y + progress * CHART_HEIGHT}
-              strokeWidth={1}
-              strokeDasharray="3"
-              stroke="var(--color-neutral-300)"
-            />
-            <text
-              x={CHART_X - 10}
-              y={CHART_Y + progress * CHART_HEIGHT + 3.5}
-              className="text-10 leading-14 font-mono"
-              textLength={width}
-              fill="var(--color-neutral-500)"
-              textAnchor="end"
-            >
-              {formatted}
-            </text>
-          </Fragment>
-        )
-      })}
-      {data.map(({ month }, index) => (
-        <text
-          key={`text-${month}`}
-          x={CHART_X + columnWidth / 2 + columnWidth * index}
-          y={CHART_Y + CHART_HEIGHT + 20}
-          className="text-10 leading-14 font-mono"
-          fill="var(--color-neutral-500)"
-          textAnchor="middle"
+    <div>
+      <div className="flex gap-12">
+        <div
+          className="flex flex-col justify-between shrink-0"
+          style={{ width: yAxisWidth }}
         >
-          {DateTime.fromSQL(month).toFormat('LLL')}
-        </text>
-      ))}
-      {data.map(({ month, total_usd }, index) => {
-        const columnStart = CHART_X + (index / data.length) * CHART_WIDTH
-        const height = CHART_HEIGHT * (total_usd / chartMax)
-        const left = columnStart + columnWidth * columnPadding
-        const top = CHART_Y + CHART_HEIGHT - height
-
-        return (
-          <rect
-            key={`bar-${month}`}
-            x={left}
-            y={top}
-            width={barWidth}
-            height={height}
-            transform="scale(1,0)"
-            rx={3}
-            ry={3}
-            fill="var(--color-neutral-300)"
-            style={{ transformOrigin: 'bottom' }}
+          {yAxis.map(y => (
+            <p
+              className="text-12 leading-18 text-neutral-800 font-mono"
+              key={y.formatted}
+            >
+              {y.formatted}
+            </p>
+          ))}
+        </div>
+        <div className="flex-1 py-9">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox={`0 0 ${VIEWPORT_WIDTH} ${VIEWPORT_HEIGHT}`}
+            className="animate-fade-in overflow-visible"
           >
-            <animateTransform
-              attributeName="transform"
-              type="scale"
-              values={`1 0;1 1`}
-              keySplines="0.1 0.75 0.25 1"
-              keyTimes="0;1"
-              calcMode="spline"
-              dur="0.5s"
-              begin={index * 0.025 + 's'}
-              fill="freeze"
-            />
-          </rect>
-        )
-      })}
-    </svg>
+            {yAxis.map(({ progress }, index) => (
+              <line
+                key={`value-line-${index}`}
+                x1={0}
+                y1={progress * VIEWPORT_HEIGHT}
+                x2={VIEWPORT_WIDTH}
+                y2={progress * VIEWPORT_HEIGHT}
+                strokeWidth={1}
+                strokeDasharray="3"
+                stroke="var(--color-neutral-300)"
+              />
+            ))}
+            {data.map(({ month, total_usd }, index) => {
+              const columnStart = (index / data.length) * VIEWPORT_WIDTH
+              const height = VIEWPORT_HEIGHT * (total_usd / chartMax)
+              const left = columnStart + columnWidth * columnPadding
+              const top = VIEWPORT_HEIGHT - height
+
+              return (
+                <rect
+                  key={`bar-${month}`}
+                  x={left}
+                  y={top}
+                  width={barWidth}
+                  height={height}
+                  transform="scale(1,0)"
+                  rx={3}
+                  ry={3}
+                  fill="var(--color-neutral-300)"
+                  style={{ transformOrigin: 'bottom' }}
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    type="scale"
+                    values={`1 0;1 1`}
+                    keySplines="0.1 0.75 0.25 1"
+                    keyTimes="0;1"
+                    calcMode="spline"
+                    dur="0.5s"
+                    begin={index * 0.025 + 's'}
+                    fill="freeze"
+                  />
+                </rect>
+              )
+            })}
+          </svg>
+        </div>
+      </div>
+      <div
+        style={{ marginLeft: yAxisWidth + 12 }}
+        className="flex justify-around mt-3"
+      >
+        {data.map(d => (
+          <p
+            key={d.month}
+            className="text-12 leading-18 font-mono text-neutral-800"
+          >
+            {DateTime.fromSQL(d.month).toFormat('LLL')}
+          </p>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -182,7 +185,7 @@ function computeYAxis(
       value,
       progress: 1 - index / (ticks.length - 1),
       formatted,
-      width: formatted.length * 6,
+      width: formatted.length * 7.2,
     }
   })
 
