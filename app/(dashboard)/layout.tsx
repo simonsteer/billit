@@ -5,11 +5,12 @@ import {
   GearIcon,
   PersonIcon,
 } from '@radix-ui/react-icons'
-import { DashboardNavLink } from '@/lib/components'
+import { DashboardNavLink, SessionPolice } from '@/lib/components'
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex flex-col fixed inset-0 bg-white">
+      <SessionPolice />
       <div className="flex h-full">
         <nav className="w-248 shrink-0 py-12 px-24 flex flex-col overflow-y-scroll no-scrollbar h-full divide-y divide-neutral-200">
           <DashboardNavLink icon={<DashboardIcon />} href="/dashboard">
