@@ -22,10 +22,10 @@ export default async function Page() {
         </p>
         <div className="flex flex-col gap-40">
           <InvoicesTable
-            title="Recently Issued"
+            title="Outstanding"
             locale={locale}
             params={{
-              paid: null,
+              paid: false,
               ordering: ['date_due', 'desc'],
               page: 1,
               currency: null,
@@ -33,22 +33,11 @@ export default async function Page() {
             }}
           />
           <InvoicesTable
-            title="Settled"
+            title="Paid"
             locale={locale}
             params={{
               paid: true,
               ordering: ['date_paid', 'desc'],
-              page: 1,
-              currency: null,
-              client_id: null,
-            }}
-          />
-          <InvoicesTable
-            title="Outstanding & Most Valuable"
-            locale={locale}
-            params={{
-              paid: false,
-              ordering: ['total_usd', 'desc'],
               page: 1,
               currency: null,
               client_id: null,
