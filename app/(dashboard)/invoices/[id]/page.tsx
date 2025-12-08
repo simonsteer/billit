@@ -39,7 +39,7 @@ export default async function Page({
   const locale = await inferLocaleFromHeaders()
 
   return (
-    <div className="pt-24 flex flex-col h-full">
+    <div className="pt-24 px-24 flex flex-col h-full">
       <div className="flex-1 flex flex-col w-full max-w-screen-md mx-auto">
         <h1 className="text-36 leading-48 font-serif text-neutral-800 mb-40">
           Invoice #{invoice.invoice_number}
