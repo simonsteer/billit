@@ -10,13 +10,18 @@ export default async function Page() {
   const locale = await inferLocaleFromHeaders()
 
   return (
-    <div className="flex flex-col gap-40">
-      <p className="text-16 leading-24 font-sans text-neutral-800 w-full max-w-2xl mb-32">
-        High-level overview of your billing health. See what payments are
-        expected in the near future, amounts that are overdue, historical views
-        of paid invoices, etc.
-      </p>
-      <YearlyRevenueChart locale={locale} />
+    <div className="p-24">
+      <div className="w-full max-w-screen-md mx-auto">
+        <h1 className="text-36 leading-48 font-serif text-neutral-800 mb-12">
+          Dashboard
+        </h1>
+        <p className="text-16 leading-24 font-sans text-neutral-800 w-full max-w-xl mb-40">
+          High-level overview of your billing health. See what payments are
+          expected in the near future, amounts that are overdue, historical
+          views of paid invoices, etc.
+        </p>
+        <YearlyRevenueChart locale={locale} />
+      </div>
     </div>
   )
 }

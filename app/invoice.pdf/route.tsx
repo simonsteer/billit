@@ -10,9 +10,9 @@ export async function GET() {
 
   const stream = await renderToStream(
     <Invoice
+      mode="yoga"
       invoice={invoice}
       locale={locale}
-      mode="yoga"
       layout={DEFAULT_LAYOUT}
     />
   )

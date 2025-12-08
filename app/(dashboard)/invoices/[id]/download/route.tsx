@@ -9,7 +9,7 @@ import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
 import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
 
 export async function GET(
-  request: NextRequest,
+  _: NextRequest,
   {
     params,
   }: {
@@ -20,7 +20,7 @@ export async function GET(
   if (!session) return new Response('Unauthorized', { status: 401 })
 
   const id = (await params).id
-  console.log({ id })
+
   const [invoice] = await db()
     .select()
     .from(invoices)

@@ -31,8 +31,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
         <span className="py-24 shrink-0">
           <span className="block w-px h-full bg-neutral-200" />
         </span>
-        <main className="w-full overflow-y-scroll no-scrollbar h-full p-24">
-          <div className="max-w-screen-lg mx-auto">{children}</div>
+        <main className="overflow-y-scroll no-scrollbar flex-1 flex flex-col">
+          <div className="w-full min-h-full">{children}</div>
         </main>
       </div>
     </div>

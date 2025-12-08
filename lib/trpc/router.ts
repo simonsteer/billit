@@ -16,6 +16,7 @@ import { auth0 } from '@/lib/auth'
 import { business_profiles, clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
 import { BusinessProfileUpdateSchema } from '@/lib/business_profiles/types'
+import { ClientUpdateSchema } from '@/lib/clients/types'
 
 export const trpcRouter = createTRPCRouter({
   getClients: baseProcedure.query(async () => {
@@ -117,25 +118,6 @@ export const trpcRouter = createTRPCRouter({
       .groupBy(cte.month)
       .orderBy(cte.month)
   }),
-  getBusinessProfile: baseProcedure.query(async () => {
-    'use server'
-    const session = await auth0.getSession()
-    if (!session) return null
-
-    let [profile = null] = await db()
-      .select()
-      .from(business_profiles)
-      .where(eq(business_profiles.user_id, session.user.sub))
-
-    if (!profile) {
-      ;[profile] = await db()
-        .insert(business_profiles)
-        .values({ user_id: session.user.sub })
-        .returning()
-    }
-
-    return profile
-  }),
   updateBusinessProfile: baseProcedure
     .input(type({ id: 'string', updates: BusinessProfileUpdateSchema }))
     .mutation(async ({ input }) => {
@@ -155,5 +137,22 @@ export const trpcRouter = createTRPCRouter({
         .returning()
 
       return profile
+    }),
+  updateClient: baseProcedure
+    .input(type({ id: 'string', updates: ClientUpdateSchema }))
+    .mutation(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return null
+
+      const [client = null] = await db()
+        .update(clients)
+        .set(input.updates)
+        .where(
+          and(eq(clients.user_id, session.user.sub), eq(clients.id, input.id))
+        )
+        .returning()
+
+      return client
     }),
 })

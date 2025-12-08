@@ -16,7 +16,7 @@ export function Root(props: RootProps) {
     case 'dom':
       return (
         <div
-          className="bg-white shadow-md w-(--invoice-width) min-h-(--invoice-min-height)"
+          className="border border-neutral-200 bg-white w-(--invoice-width) min-h-(--invoice-min-height)"
           style={style}
         >
           {props.children}

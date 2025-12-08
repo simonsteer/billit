@@ -88,6 +88,7 @@ export const getAnonymousInvoice = (): InvoiceJson => {
 
   return {
     user_id: 'anonymous',
+    client_id: 'anonymous',
     id: nanoid(),
     created_at: now.toSQLDate(),
     currency: 'USD',

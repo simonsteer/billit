@@ -9,6 +9,8 @@ export const ClientUpdateSchema = ClientSchema.omit(
   'id',
   'created_at',
   'updated_at'
-).partial()
+)
+  .partial()
+  .omit('user_id')
 
 export type ClientJson = typeof ClientSchema.infer
