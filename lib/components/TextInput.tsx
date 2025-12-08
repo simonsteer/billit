@@ -25,7 +25,7 @@ export function TextInput({
       </label>
       <input
         id={id}
-        className="bg-transparent w-full border border-neutral-300 text-neutral-800 placeholder:text-neutral-400 rounded-lg px-12 py-8 text-14 leading-20 font-sans outline-none focus:ring ring-lime-300"
+        className="bg-transparent w-full border border-neutral-300 text-neutral-800 placeholder:text-neutral-400 rounded-lg px-12 py-8 text-14 leading-20 font-sans outline-none focus:ring ring-inset ring-neutral-300"
         type={type}
         value={value}
         onChange={e => setValue(e.target.value)}
