@@ -78,6 +78,13 @@
       "when": 1765323683912,
       "tag": "0010_smooth_ghost_rider",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1765323793769,
+      "tag": "0011_blue_black_tarantula",
+      "breakpoints": true
     }
   ]
 }
