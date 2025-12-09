@@ -71,6 +71,13 @@
       "when": 1765323105176,
       "tag": "0009_faulty_surge",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1765323683912,
+      "tag": "0010_smooth_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

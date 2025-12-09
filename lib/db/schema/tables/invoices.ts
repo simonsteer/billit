@@ -4,6 +4,8 @@ import { nanoid } from 'nanoid'
 import { created_at_updated_at } from '@/lib/db/schema/mixins'
 import { currenciesEnum } from '@/lib/db/schema/enums'
 import { clients } from '@/lib/db/schema'
+import { ClientJson } from '@/lib/clients/types'
+import { BusinessProfileJson } from '@/lib/business_profiles/types'
 
 export const invoices = pgTable(
   'invoices',
@@ -16,6 +18,8 @@ export const invoices = pgTable(
     client_id: text()
       .notNull()
       .references(() => clients.id),
+    client_snapshot: jsonb().$type<ClientJson>(),
+    business_profile_snapshot: jsonb().$type<BusinessProfileJson>(),
     from_description: text().notNull(),
     to_description: text().notNull(),
     payment_description: text().notNull(),
