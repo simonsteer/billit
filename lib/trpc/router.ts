@@ -34,6 +34,22 @@ export const trpcRouter = createTRPCRouter({
       .leftJoin(invoices, eq(invoices.client_id, clients.id))
       .groupBy(clients.id, clients.client_name)
   }),
+  getInvoice: baseProcedure
+    .input(type({ id: 'string' }))
+    .query(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return null
+
+      const [invoice = null] = await db()
+        .select()
+        .from(invoices)
+        .where(
+          and(eq(invoices.id, input.id), eq(invoices.user_id, session.user.sub))
+        )
+
+      return invoice
+    }),
   getInvoices: baseProcedure
     .input(
       type({
@@ -117,6 +133,18 @@ export const trpcRouter = createTRPCRouter({
       .where(eq(invoices.user_id, session.user.sub))
       .groupBy(cte.month)
       .orderBy(cte.month)
+  }),
+  getBusinessProfile: baseProcedure.query(async () => {
+    'use server'
+    const session = await auth0.getSession()
+    if (!session) return null
+
+    const [profile = null] = await db()
+      .select()
+      .from(business_profiles)
+      .where(and(eq(business_profiles.user_id, session.user.sub)))
+
+    return profile
   }),
   updateBusinessProfile: baseProcedure
     .input(type({ id: 'string', updates: BusinessProfileUpdateSchema }))

@@ -1,24 +1,14 @@
-import { eq } from 'drizzle-orm'
 import { BusinessProfileForm } from '@/lib/components'
 import { auth0 } from '@/lib/auth'
-import { db } from '@/lib/db/client'
-import { business_profiles } from '@/lib/db/schema'
+import { trpc } from '@/lib/trpc/server'
+import { redirect } from 'next/navigation'
 
 export default async function Page() {
   const session = await auth0.getSession()
   if (!session) return null
 
-  let [business_profile = null] = await db()
-    .select()
-    .from(business_profiles)
-    .where(eq(business_profiles.user_id, session.user.sub))
-
-  if (!business_profile) {
-    ;[business_profile] = await db()
-      .insert(business_profiles)
-      .values({ user_id: session.user.sub })
-      .returning()
-  }
+  const business_profile = await trpc.getBusinessProfile()
+  if (!business_profile) redirect('/onboarding')
 
   return (
     <div className="p-24">

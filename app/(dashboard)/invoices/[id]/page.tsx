@@ -4,10 +4,11 @@ import { ReactNode } from 'react'
 import { Tabs } from 'radix-ui'
 import { Invoice, InvoiceEditorForm } from '@/lib/components'
 import { db } from '@/lib/db/client'
-import { business_profiles, clients, invoices } from '@/lib/db/schema'
+import { clients, invoices } from '@/lib/db/schema'
 import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
 import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
 import { auth0 } from '@/lib/auth'
+import { trpc } from '@/lib/trpc/server'
 
 export default async function Page({
   params,
@@ -17,24 +18,11 @@ export default async function Page({
   const session = await auth0.getSession()
   if (!session) redirect('/')
 
-  const id = (await params).id
-  const [{ invoices: invoice, clients: client }] = await db()
-    .select()
-    .from(invoices)
-    .where(and(eq(invoices.id, id), eq(invoices.user_id, session.user.sub)))
-    .innerJoin(clients, eq(invoices.client_id, clients.id))
+  const business_profile = await trpc.getBusinessProfile()
+  if (!business_profile) redirect('/onboarding')
 
-  let [business_profile = null] = await db()
-    .select()
-    .from(business_profiles)
-    .where(eq(business_profiles.user_id, session.user.sub))
-
-  if (!business_profile) {
-    ;[business_profile] = await db()
-      .insert(business_profiles)
-      .values({ user_id: session.user.sub })
-      .returning()
-  }
+  const invoice = await trpc.getInvoice({ id: (await params).id })
+  if (!invoice) redirect('/invoices')
 
   const locale = await inferLocaleFromHeaders()
 
@@ -54,11 +42,7 @@ export default async function Page({
               value="edit"
               className="absolute inset-0 overflow-y-scroll no-scrollbar pt-24 pb-72"
             >
-              <InvoiceEditorForm
-                business_profile={business_profile}
-                client={client}
-                invoice={invoice}
-              />
+              <InvoiceEditorForm invoice={invoice} />
             </Tabs.Content>
             <Tabs.Content
               value="preview"

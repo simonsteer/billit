@@ -8,7 +8,7 @@ export default async function Page() {
   if (!session) redirect('/')
 
   const business_profile = await trpc.getBusinessProfile()
-  if (!business_profile) redirect('/onboarding')
+  if (business_profile) redirect('/dashboard')
 
   return <Spinner />
 }

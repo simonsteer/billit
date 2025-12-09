@@ -2,14 +2,14 @@
 
 import { BusinessProfileJson } from '@/lib/business_profiles/types'
 import { TextInput } from '@/lib/components'
-import { useUpdateBusinessProfile } from '@/lib/hooks'
+import { usePartialState } from '@/lib/hooks'
 
 export function BusinessProfileForm({
   business_profile: _business_profile,
 }: {
   business_profile: BusinessProfileJson
 }) {
-  const [profile, setProfile] = useUpdateBusinessProfile(_business_profile)
+  const [profile, setProfile] = usePartialState(_business_profile)
 
   const {
     address_line_1,
@@ -27,8 +27,15 @@ export function BusinessProfileForm({
         id="business_name"
         value={business_name || ''}
         setValue={business_name => setProfile({ business_name })}
-        label="The name of your business"
+        label="The name of your business *"
         placeholder="eg. Jenna's Extreme Landscaping"
+        cleanse={value => value.trim()}
+        validate={value => {
+          if (value.length < 2) {
+            return 'Business name must be at least 2 characters long'
+          }
+          return null
+        }}
       />
       <TextInput
         id="address_line_1"
@@ -44,7 +51,7 @@ export function BusinessProfileForm({
         label="Address line 2"
         placeholder="eg. Unit 456"
       />
-      <div className="flex gap-12">
+      <div className="flex gap-18">
         <TextInput
           id="city"
           value={city || ''}
@@ -60,7 +67,7 @@ export function BusinessProfileForm({
           placeholder="eg. Oklahoma"
         />
       </div>
-      <div className="flex gap-12">
+      <div className="flex gap-18">
         <TextInput
           id="country"
           value={country || ''}
