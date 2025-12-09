@@ -97,7 +97,7 @@ function getFakeInvoice({
 
   const date_paid =
     faker.helpers.maybe(() =>
-      faker.date.soon({ refDate: date_due, days: 30 })
+      faker.date.soon({ refDate: date_issued, days: 30 })
     ) || null
 
   const currency = CURRENCIES[Math.floor(Math.random() * CURRENCIES.length)]
