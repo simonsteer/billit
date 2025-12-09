@@ -6,6 +6,7 @@ import { currenciesEnum } from '@/lib/db/schema/enums'
 import { clients } from '@/lib/db/schema'
 import { ClientJson } from '@/lib/clients/types'
 import { BusinessProfileJson } from '@/lib/business_profiles/types'
+import { LineItemJson, TaxItemJson } from '@/lib/invoices/types'
 
 export const invoices = pgTable(
   'invoices',
@@ -28,27 +29,8 @@ export const invoices = pgTable(
     date_due: date().notNull(),
     date_paid: date(),
     currency: currenciesEnum().notNull(),
-    line_items: jsonb()
-      .$type<
-        {
-          id: string
-          description: string
-          quantity: number
-          price: number
-        }[]
-      >()
-      .notNull(),
-    tax_items: jsonb()
-      .$type<
-        {
-          id: string
-          text: string
-          label: string | null
-          amount: number
-          cost: number
-        }[]
-      >()
-      .notNull(),
+    line_items: jsonb().$type<LineItemJson[]>().notNull(),
+    tax_items: jsonb().$type<TaxItemJson[]>().notNull(),
     subtotal: integer().notNull(),
     total: integer().notNull(),
     total_usd: integer().notNull(),
