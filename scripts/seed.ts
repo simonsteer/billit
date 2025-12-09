@@ -141,6 +141,8 @@ function getFakeInvoice({
     id: nanoid(),
     user_id: userId,
     client_id: client.id,
+    client_snapshot: client,
+    business_profile_snapshot: business_profile,
     to_description: [
       client.client_name,
       `${client.address_line_1}, ${client.address_line_2}`,
