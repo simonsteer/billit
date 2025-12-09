@@ -10,7 +10,7 @@ export const business_profiles = pgTable(
       .primaryKey()
       .$defaultFn(() => nanoid()),
     user_id: text().notNull(),
-    business_name: text(),
+    business_name: text().notNull(),
     address_line_1: text(),
     address_line_2: text(),
     city: text(),

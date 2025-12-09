@@ -1,0 +1,1 @@
+ALTER TABLE "business_profiles" ALTER COLUMN "business_name" SET NOT NULL;
