@@ -4,11 +4,10 @@ import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
 import { ReactNode, useEffect, useState } from 'react'
-import Link from 'next/link'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
-import { ProcedureInput } from '@/lib/trpc/types'
+import { ProcedureInput, ProcedureOutput } from '@/lib/trpc/types'
 import { Pagination, Spinner } from '@/lib/components'
 
 export function InvoicesTable({
@@ -42,7 +41,7 @@ export function InvoicesTable({
         </h2>
         <MixerHorizontalIcon className="shrink-0 w-18 h-18 text-neutral-400 mb-12" />
       </div>
-      <div className="relative rounded-lg bg-white border border-neutral-300 h-320 overflow-scroll no-scrollbar">
+      <div className="relative rounded-lg bg-white border border-neutral-300 h-360 overflow-scroll no-scrollbar">
         {isPending && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Spinner />
@@ -63,65 +62,7 @@ export function InvoicesTable({
           </div>
         )}
         {!isPending && data && data.invoices.length > 0 && (
-          <ul className="animate-fade-in">
-            <li className="sticky top-0 flex bg-neutral-100 z-50">
-              <ColumnHeading size="sm">Invoice number</ColumnHeading>
-              <ColumnHeading size="lg">Billed to</ColumnHeading>
-              <ColumnHeading size="sm">Date issued</ColumnHeading>
-              <ColumnHeading size="sm">Date due</ColumnHeading>
-              <ColumnHeading size="sm">Date paid</ColumnHeading>
-              <ColumnHeading size="sm">Currency</ColumnHeading>
-              <ColumnHeading size="md" fill>
-                Total
-              </ColumnHeading>
-            </li>
-            {data.invoices.map(invoice => {
-              const formatCurrency = getCurrencyFormatter({
-                currency: invoice.currency,
-                locale,
-              })
-
-              const today = DateTime.now()
-              const dateIssued = DateTime.fromSQL(invoice.date_issued)
-              const dateDue = DateTime.fromSQL(invoice.date_due)
-
-              const paid = invoice.date_paid !== null
-              const overdue = !paid && today > dateDue
-              const status = paid ? 'paid' : overdue ? 'overdue' : 'pending'
-
-              return (
-                <li key={invoice.id} className="animate-fade-in">
-                  <Link href={`/invoices/${invoice.id}`} className="flex group">
-                    <ColumnCell size="sm">{invoice.invoice_number}</ColumnCell>
-                    <ColumnCell size="lg">
-                      <span className="block w-215 truncate">
-                        {invoice.to_description.split('\n')[0]}
-                      </span>
-                    </ColumnCell>
-                    <ColumnCell size="sm">
-                      {dateIssued.toFormat('LLL dd, yyyy')}
-                    </ColumnCell>
-                    <ColumnCell size="sm">
-                      {dateDue.toFormat('LLL dd, yyyy')}
-                    </ColumnCell>
-                    <ColumnCell size="sm">
-                      {invoice.date_paid
-                        ? DateTime.fromSQL(invoice.date_paid).toFormat(
-                            'LLL dd, yyyy'
-                          )
-                        : '–––'}
-                    </ColumnCell>
-                    <ColumnCell size="sm">{invoice.currency}</ColumnCell>
-                    <ColumnCell size="md" fill>
-                      {formatCurrency(
-                        BigNumber(invoice.total).shiftedBy(-2).toNumber()
-                      )}
-                    </ColumnCell>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+          <TableContents data={data} locale={locale} />
         )}
       </div>
       <div className="flex items-center justify-center h-48">
@@ -146,61 +87,89 @@ export function InvoicesTable({
   )
 }
 
-function ColumnHeading({
-  children,
-  size,
-  className,
-  fill,
+function TableContents({
+  data,
+  locale,
 }: {
-  children: ReactNode
-  size: 'sm' | 'md' | 'lg'
-  className?: string
-  fill?: boolean
+  data: ProcedureOutput<'getInvoices'>
+  locale: string
 }) {
   return (
-    <span
-      className={clsx(
-        'font-serif text-14 leading-20',
-        'bg-white shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
-        {
-          ['min-w-120']: size === 'sm',
-          ['min-w-180']: size === 'md',
-          ['min-w-240']: size === 'lg',
-          ['flex-1']: fill,
-        },
-        className
-      )}
-    >
-      {children}
-    </span>
+    <table className="animate-fade-in">
+      <thead>
+        <tr>
+          <TableHeading>Invoice number</TableHeading>
+          <TableHeading>Client</TableHeading>
+          <TableHeading>Date issued</TableHeading>
+          <TableHeading>Date due</TableHeading>
+          <TableHeading>Date paid</TableHeading>
+          <TableHeading>Currency</TableHeading>
+          <TableHeading>Total</TableHeading>
+        </tr>
+      </thead>
+      <tbody>
+        {data.invoices.map(invoice => {
+          const formatCurrency = getCurrencyFormatter({
+            currency: invoice.currency,
+            locale,
+          })
+
+          const today = DateTime.now()
+          const dateIssued = DateTime.fromSQL(invoice.date_issued)
+          const dateDue = DateTime.fromSQL(invoice.date_due)
+
+          const paid = invoice.date_paid !== null
+          const overdue = !paid && today > dateDue
+          const status = paid ? 'paid' : overdue ? 'overdue' : 'pending'
+
+          return (
+            <tr key={invoice.id}>
+              <TableData>{invoice.invoice_number}</TableData>
+              <TableData>
+                <span className="block w-215 truncate">
+                  {invoice.to_description.split('\n')[0]}
+                </span>
+              </TableData>
+              <TableData>{dateIssued.toFormat('LLL dd, yyyy')}</TableData>
+              <TableData>{dateDue.toFormat('LLL dd, yyyy')}</TableData>
+              <TableData>
+                {invoice.date_paid
+                  ? DateTime.fromSQL(invoice.date_paid).toFormat('LLL dd, yyyy')
+                  : '–––'}
+              </TableData>
+              <TableData>{invoice.currency}</TableData>
+              <TableData>
+                {formatCurrency(
+                  BigNumber(invoice.total).shiftedBy(-2).toNumber()
+                )}
+              </TableData>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
   )
 }
 
-function ColumnCell({
-  children,
-  size,
-  className,
-  fill,
-}: {
-  children: ReactNode
-  size: 'sm' | 'md' | 'lg'
-  className?: string
-  fill?: boolean
-}) {
+function TableHeading({ children }: { children: ReactNode }) {
   return (
-    <span
+    <th
       className={clsx(
-        'font-mono text-12 leading-18 shrink-0 px-12 pt-8 pb-4 first:border-l-0 border-l border-b border-neutral-300',
-        {
-          ['min-w-120']: size === 'sm',
-          ['min-w-180']: size === 'md',
-          ['min-w-240']: size === 'lg',
-          ['flex-1']: fill,
-        },
-        className
+        'relative sticky top-0 whitespace-nowrap font-medium font-serif text-14 leading-20 px-12 py-6 text-left bg-white',
+        'border-x first:border-l-0 last:border-r-0 border-neutral-300',
+        'after:absolute after:inset-x-0 after:top-full after:h-px after:bg-neutral-300'
       )}
+      scope="col"
     >
-      <span className="group-hover:opacity-50">{children}</span>
-    </span>
+      {children}
+    </th>
+  )
+}
+
+function TableData({ children }: { children: ReactNode }) {
+  return (
+    <td className="border border-neutral-300 first:border-l-0 last:border-r-0 font-mono text-12 leading-18 px-12 py-6 truncate">
+      {children}
+    </td>
   )
 }
