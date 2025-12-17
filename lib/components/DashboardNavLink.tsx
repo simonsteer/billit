@@ -19,7 +19,7 @@ export function DashboardNavLink({
   return (
     <Link
       href={href}
-      className="py-12 z-10 group flex items-center gap-12 text-neutral-800 group"
+      className="relative py-12 z-10 group flex items-center gap-12 text-neutral-800 group"
     >
       {icon}
       <span

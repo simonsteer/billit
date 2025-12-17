@@ -14,15 +14,12 @@ export default async function Page() {
     <div className="p-24">
       <div className="w-full max-w-screen-md mx-auto">
         <h1 className="text-36 leading-48 font-serif text-neutral-800 mb-12">
-          Account Settings
+          Business Profile
         </h1>
         <p className="text-16 leading-24 font-sans text-neutral-800 w-full max-w-lg mb-40">
-          Your Billit account details. Information regarding your business
-          profile, subscriptions plan, etc. can be managed from here.
+          Information regarding your business profile can be managed from here.
+          This information will appear on your invoices and estimates.
         </p>
-        <h2 className="text-28 leading-40 font-serif text-neutral-800 mb-12">
-          Business Profile
-        </h2>
         <BusinessProfileForm business_profile={business_profile} />
       </div>
     </div>

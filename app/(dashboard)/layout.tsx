@@ -1,8 +1,8 @@
 import {
   DashboardIcon,
+  FaceIcon,
   FileIcon,
   FileTextIcon,
-  GearIcon,
   PersonIcon,
 } from '@radix-ui/react-icons'
 import { DashboardNavLink, SessionPolice } from '@/lib/components'
@@ -25,8 +25,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
           <DashboardNavLink icon={<PersonIcon />} href="/clients">
             Clients
           </DashboardNavLink>
-          <DashboardNavLink icon={<GearIcon />} href="/settings">
-            Settings
+          <DashboardNavLink icon={<FaceIcon />} href="/profile">
+            Profile
           </DashboardNavLink>
         </nav>
         <span className="py-24 shrink-0">
