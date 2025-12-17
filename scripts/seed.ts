@@ -95,7 +95,7 @@ function getFakeInvoice({
 
   const date_due = faker.date.soon({ refDate: date_issued, days: 15 })
 
-  const date_paid =
+  const paid_at =
     faker.helpers.maybe(() =>
       faker.date.soon({ refDate: date_issued, days: 30 })
     ) || null
@@ -165,8 +165,7 @@ function getFakeInvoice({
     updated_at: updatedAt && DateTime.fromJSDate(updatedAt).toSQL(),
     date_issued: DateTime.fromJSDate(date_issued).startOf('day').toSQLDate()!,
     date_due: DateTime.fromJSDate(date_due).startOf('day').toSQLDate()!,
-    date_paid:
-      date_paid && DateTime.fromJSDate(date_paid).startOf('day').toSQLDate(),
+    paid_at: paid_at && DateTime.fromJSDate(paid_at).toSQL(),
     currency,
     invoice_number: faker.helpers.rangeToNumber({ min: 0, max: 1000 }),
     line_items: lineItems,

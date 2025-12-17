@@ -118,7 +118,7 @@ function TableContents({
           const dateIssued = DateTime.fromSQL(invoice.date_issued)
           const dateDue = DateTime.fromSQL(invoice.date_due)
 
-          const paid = invoice.date_paid !== null
+          const paid = invoice.paid_at !== null
           const overdue = !paid && today > dateDue
           const status = paid ? 'paid' : overdue ? 'overdue' : 'pending'
 
@@ -131,8 +131,8 @@ function TableContents({
               <TableData>{dateIssued.toFormat('LLL dd, yyyy')}</TableData>
               <TableData>{dateDue.toFormat('LLL dd, yyyy')}</TableData>
               <TableData>
-                {invoice.date_paid
-                  ? DateTime.fromSQL(invoice.date_paid).toFormat('LLL dd, yyyy')
+                {invoice.paid_at
+                  ? DateTime.fromSQL(invoice.paid_at).toFormat('LLL dd, yyyy')
                   : '–––'}
               </TableData>
               <TableData>{invoice.currency}</TableData>
@@ -153,7 +153,7 @@ function TableHeading({ children }: { children: ReactNode }) {
   return (
     <th
       className={clsx(
-        'relative sticky top-0 whitespace-nowrap font-medium font-serif text-14 leading-20 px-12 py-6 text-left bg-white',
+        'relative sticky top-0 whitespace-nowrap font-normal font-serif text-14 leading-20 px-12 py-6 text-left bg-white',
         'border-x first:border-l-0 last:border-r-0 border-neutral-300',
         'after:absolute after:inset-x-0 after:top-full after:h-px after:bg-neutral-300'
       )}

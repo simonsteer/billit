@@ -1,5 +1,13 @@
 import { relations } from 'drizzle-orm'
-import { date, index, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
+import {
+  date,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core'
 import { nanoid } from 'nanoid'
 import { created_at_updated_at } from '@/lib/db/schema/mixins'
 import { currenciesEnum } from '@/lib/db/schema/enums'
@@ -27,7 +35,7 @@ export const invoices = pgTable(
     invoice_number: integer().notNull(),
     date_issued: date().notNull(),
     date_due: date().notNull(),
-    date_paid: date(),
+    paid_at: timestamp({ mode: 'string' }),
     currency: currenciesEnum().notNull(),
     line_items: jsonb().$type<LineItemJson[]>().notNull(),
     tax_items: jsonb().$type<TaxItemJson[]>().notNull(),

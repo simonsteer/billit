@@ -56,7 +56,7 @@ export const trpcRouter = createTRPCRouter({
         page: 'number',
         paid: 'boolean | null',
         ordering: type([
-          "'created_at' | 'updated_at' | 'date_paid' | 'date_issued' | 'date_due' | 'invoice_number' | 'total_usd'",
+          "'created_at' | 'updated_at' | 'paid_at' | 'date_issued' | 'date_due' | 'invoice_number' | 'total_usd'",
           '"asc" | "desc"',
         ]).or('null'),
         currency: CurrencySchema.or('null'),
@@ -69,8 +69,8 @@ export const trpcRouter = createTRPCRouter({
       if (!session) return { invoices: [], currentPage: page, maxPage: page }
 
       let where = [eq(invoices.user_id, session.user.sub)]
-      if (paid === true) where.push(isNotNull(invoices.date_paid))
-      if (paid === false) where.push(isNull(invoices.date_paid))
+      if (paid === true) where.push(isNotNull(invoices.paid_at))
+      if (paid === false) where.push(isNull(invoices.paid_at))
       if (currency) where.push(eq(invoices.currency, currency))
       if (client_id) where.push(eq(invoices.client_id, client_id))
 
@@ -128,7 +128,7 @@ export const trpcRouter = createTRPCRouter({
       .from(cte)
       .leftJoin(
         invoices,
-        sql`date_trunc('month', ${invoices.date_paid}) = ${cte.month}`
+        sql`date_trunc('month', ${invoices.paid_at}) = ${cte.month}`
       )
       .where(eq(invoices.user_id, session.user.sub))
       .groupBy(cte.month)

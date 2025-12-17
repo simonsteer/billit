@@ -41,7 +41,7 @@ export default async function Page() {
             locale={locale}
             params={{
               paid: true,
-              ordering: ['date_paid', 'desc'],
+              ordering: ['paid_at', 'desc'],
               page: 1,
               currency: null,
               client_id: null,
