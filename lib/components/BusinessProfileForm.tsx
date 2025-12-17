@@ -31,6 +31,9 @@ export function BusinessProfileForm({
         placeholder="eg. Jenna's Extreme Landscaping"
         cleanse={value => value.trim()}
         validate={value => {
+          if (value.length === 0) {
+            return 'This is a required field'
+          }
           if (value.length < 2) {
             return 'Business name must be at least 2 characters long'
           }
