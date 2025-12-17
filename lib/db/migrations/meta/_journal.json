@@ -85,6 +85,13 @@
       "when": 1765323793769,
       "tag": "0011_blue_black_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1765934584308,
+      "tag": "0012_real_blob",
+      "breakpoints": true
     }
   ]
 }

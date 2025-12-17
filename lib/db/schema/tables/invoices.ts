@@ -35,7 +35,13 @@ export const invoices = pgTable(
     total: integer().notNull(),
     total_usd: integer().notNull(),
   },
-  table => [index('index_invoices_on_user_id').on(table.user_id)]
+  table => [
+    index('index_invoices_on_user_id').on(table.user_id),
+    index('index_invoices_on_user_id_and_client_id').on(
+      table.user_id,
+      table.client_id
+    ),
+  ]
 )
 
 export const invoices_relations = relations(invoices, ({ one }) => ({
