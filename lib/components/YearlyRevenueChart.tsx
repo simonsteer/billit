@@ -63,7 +63,7 @@ function RevenueChart({
   const yAxisWidth = Math.max(...yAxis.map(y => y.width))
   const chartMax = Math.max(...yAxis.map(i => i.value))
 
-  const columnPadding = 0.15
+  const columnPadding = 0.2
   const columnWidth = VIEWPORT_WIDTH / data.length
   const barWidth = columnWidth * (1 - columnPadding * 2)
 
@@ -83,7 +83,7 @@ function RevenueChart({
             </p>
           ))}
         </div>
-        <div className="flex-1 pt-9">
+        <div className="flex-1 py-9">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox={`0 0 ${VIEWPORT_WIDTH} ${VIEWPORT_HEIGHT}`}
@@ -139,7 +139,7 @@ function RevenueChart({
       </div>
       <div
         style={{ marginLeft: yAxisWidth + 12 }}
-        className="flex justify-around items-center mt-9"
+        className="flex justify-around items-center mt-2"
       >
         {data.map(d => (
           <p

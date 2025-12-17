@@ -95,7 +95,7 @@ function TableContents({
   locale: string
 }) {
   return (
-    <table className="animate-fade-in">
+    <table className="animate-fade-in min-w-full">
       <thead>
         <tr>
           <TableHeading>Invoice number</TableHeading>
@@ -125,10 +125,8 @@ function TableContents({
           return (
             <tr key={invoice.id}>
               <TableData>{invoice.invoice_number}</TableData>
-              <TableData>
-                <span className="block w-215 truncate">
-                  {invoice.to_description.split('\n')[0]}
-                </span>
+              <TableData className="max-w-200 truncate">
+                {invoice.to_description.split('\n')[0]}
               </TableData>
               <TableData>{dateIssued.toFormat('LLL dd, yyyy')}</TableData>
               <TableData>{dateDue.toFormat('LLL dd, yyyy')}</TableData>
@@ -166,9 +164,20 @@ function TableHeading({ children }: { children: ReactNode }) {
   )
 }
 
-function TableData({ children }: { children: ReactNode }) {
+function TableData({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
   return (
-    <td className="border border-neutral-300 first:border-l-0 last:border-r-0 font-mono text-12 leading-18 px-12 py-6 truncate">
+    <td
+      className={clsx(
+        'border border-neutral-300 first:border-l-0 last:border-r-0 font-mono text-12 leading-18 px-12 py-6 truncate',
+        className
+      )}
+    >
       {children}
     </td>
   )
