@@ -1,6 +1,7 @@
 import { type } from 'arktype'
 import { createInsertSchema, createSelectSchema } from 'drizzle-arktype'
 import { invoices } from '@/lib/db/schema'
+import { getInvoiceRenderData } from '@/lib/invoices/utils'
 
 export const LineItemSchema = type({
   id: 'string',
@@ -36,3 +37,5 @@ export type LineItemJson = typeof LineItemSchema.infer
 export type TaxItemJson = typeof TaxItemSchema.infer
 
 export type InvoiceJson = typeof invoices.$inferSelect
+
+export type InvoiceRenderData = ReturnType<typeof getInvoiceRenderData>

@@ -1,13 +1,8 @@
 import { type, scope } from 'arktype'
 import { JsonObject, Merge, KeyAsString } from 'type-fest'
-import { Styles as YogaStyles } from '@react-pdf/renderer'
-import {
-  InvoiceJson,
-  LineItemSchema,
-  TaxItemSchema,
-  InvoiceSchema,
-} from '@/lib/invoices/types'
 import { ReactNode } from 'react'
+import { Styles as YogaStyles } from '@react-pdf/renderer'
+import { InvoiceRenderData } from '@/lib/invoices/types'
 
 export type LayoutMode = 'dom' | 'yoga'
 
@@ -85,9 +80,8 @@ export const {
   FieldLayoutNodeSchema: {
     ['...']: 'LayoutNodeBaseSchema',
     type: '"field"',
-    value: InvoiceSchema.keyof()
-      .or(LineItemSchema.keyof())
-      .or(TaxItemSchema.keyof()),
+    value:
+      "'invoice_number' | 'from_description' | 'to_description' | 'payment_description' | 'line_items' | 'tax_items' | 'date_due' | 'date_issued' | 'subtotal' | 'total' | 'description' | 'quantity' | 'price' | 'text' | 'amount' | 'cost' | 'label'",
     template: 'null | child',
   },
   BoxLayoutNodeSchema: {
@@ -117,21 +111,14 @@ export type RootLayoutNode = typeof RootLayoutNodeSchema.infer
 
 export type ImageLayoutNode = typeof ImageLayoutNodeSchema.infer
 
-export type LayoutFieldComponents = FieldComponents<InvoiceJson>
+export type LayoutFieldComponents = FieldComponents<InvoiceRenderData>
 
-type FieldComponents<D extends JsonObject, WithKey extends boolean = false> = {
+type FieldComponents<D extends JsonObject> = {
   [K in KeyAsString<D>]?: D[K] extends (infer V)[]
     ? V extends JsonObject
-      ? {
-          key: (item: V) => string
-          components: FieldComponents<V, true>
-        }
-      : WithKey extends true
-      ? (args: { node: FieldLayoutNode; itemKey: string }) => ReactNode
-      : (args: { node: FieldLayoutNode }) => ReactNode
+      ? FieldComponents<V>
+      : (args: { node: FieldLayoutNode; value: V }) => ReactNode
     : D[K] extends JsonObject
-    ? FieldComponents<D[K], false>
-    : WithKey extends true
-    ? (args: { node: FieldLayoutNode; itemKey: string }) => ReactNode
-    : (args: { node: FieldLayoutNode }) => ReactNode
+    ? FieldComponents<D[K]>
+    : (args: { node: FieldLayoutNode; value: D[K] }) => ReactNode
 }

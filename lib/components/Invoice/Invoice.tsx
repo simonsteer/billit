@@ -1,13 +1,7 @@
-import BigNumber from 'bignumber.js'
-import { DateTime } from 'luxon'
-import {
-  LayoutFieldComponents,
-  LayoutMode,
-  RootLayoutNode,
-} from '@/lib/layouts/types'
-import { getCurrencyFormatter } from '@/lib/currency/utils'
+import { LayoutMode, RootLayoutNode } from '@/lib/layouts/types'
 import { InvoiceJson } from '@/lib/invoices/types'
-import { LayoutNodeComponent, Text } from './components'
+import { LayoutNodeComponent } from './components'
+import { getInvoiceRenderData } from '@/lib/invoices/utils'
 
 export function Invoice({
   invoice,
@@ -20,116 +14,9 @@ export function Invoice({
   locale: string
   mode: LayoutMode
 }) {
-  const formatCurrency = getCurrencyFormatter({
-    currency: invoice.currency,
-    locale,
-  })
-
-  const components: LayoutFieldComponents = {
-    from_description: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {invoice.from_description}
-      </Text>
-    ),
-    to_description: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {invoice.to_description}
-      </Text>
-    ),
-    payment_description: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {invoice.payment_description}
-      </Text>
-    ),
-    date_issued: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {DateTime.fromSQL(invoice.date_issued).toFormat('LLL d, yyyy')}
-      </Text>
-    ),
-    date_due: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {DateTime.fromSQL(invoice.date_due).toFormat('LLL d, yyyy')}
-      </Text>
-    ),
-    invoice_number: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {invoice.invoice_number}
-      </Text>
-    ),
-    line_items: {
-      key: item => item.id,
-      components: {
-        description: ({ node, itemKey }) => {
-          const item = invoice.line_items.find(item => item.id === itemKey)!
-          return (
-            <Text mode={mode} style={node.style}>
-              {item.description}
-            </Text>
-          )
-        },
-        price: ({ node, itemKey }) => {
-          const item = invoice.line_items.find(item => item.id === itemKey)!
-          return (
-            <Text mode={mode} style={node.style}>
-              {formatCurrency(BigNumber(item.price).shiftedBy(-2).toNumber())}
-            </Text>
-          )
-        },
-        quantity: ({ node, itemKey }) => {
-          const item = invoice.line_items.find(item => item.id === itemKey)!
-          return (
-            <Text mode={mode} style={node.style}>
-              {item.quantity}
-            </Text>
-          )
-        },
-      },
-    },
-    tax_items: {
-      key: item => item.id,
-      components: {
-        label: ({ node, itemKey }) => {
-          const item = invoice.tax_items.find(item => item.id === itemKey)!
-          return (
-            <Text mode={mode} style={node.style}>
-              {item.text}
-            </Text>
-          )
-        },
-        amount: ({ node, itemKey }) => {
-          const item = invoice.tax_items.find(item => item.id === itemKey)!
-          return (
-            <Text mode={mode} style={node.style}>
-              {item.amount}
-            </Text>
-          )
-        },
-        cost: ({ node, itemKey }) => {
-          const item = invoice.tax_items.find(item => item.id === itemKey)!
-          return (
-            <Text mode={mode} style={node.style}>
-              {formatCurrency(BigNumber(item.cost).shiftedBy(-2).toNumber())}
-            </Text>
-          )
-        },
-      },
-    },
-    subtotal: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {formatCurrency(BigNumber(invoice.subtotal).shiftedBy(-2).toNumber())}
-      </Text>
-    ),
-    total: ({ node }) => (
-      <Text mode={mode} style={node.style}>
-        {formatCurrency(BigNumber(invoice.total).shiftedBy(-2).toNumber())}
-      </Text>
-    ),
-  }
-
   return (
     <LayoutNodeComponent
-      components={components}
-      data={invoice}
+      data={getInvoiceRenderData({ invoice, locale })}
       mode={mode}
       node={layout}
     />

@@ -12,7 +12,7 @@ import { Text } from './Text'
 
 export function LayoutNodeComponent({
   data,
-  components,
+  components = {},
   itemKey,
   node,
   mode,
@@ -24,7 +24,7 @@ export function LayoutNodeComponent({
     | FieldLayoutNode
     | ImageLayoutNode
   data: any
-  components: any
+  components?: any
   itemKey?: string
   mode: LayoutMode
 }) {
@@ -46,32 +46,31 @@ export function LayoutNodeComponent({
       )
     case 'field':
       const value = data[node.value]
+      if (value === undefined || value === null) return null
+
       const Component = components[node.value]
       if (node.template) {
         if (Array.isArray(value)) {
           if (value.length === 0) return null
           return (
             <Box key={node.id} mode={mode} style={node.style}>
-              {value.map(item => {
-                const itemKey = Component.key(item)
-                return (
-                  <LayoutNodeComponent
-                    key={itemKey}
-                    components={Component.components}
-                    data={item}
-                    itemKey={itemKey}
-                    mode={mode}
-                    node={node.template!}
-                  />
-                )
-              })}
+              {value.map(item => (
+                <LayoutNodeComponent
+                  key={item.id}
+                  components={Component}
+                  data={item}
+                  itemKey={itemKey}
+                  mode={mode}
+                  node={node.template!}
+                />
+              ))}
             </Box>
           )
         }
         return (
           <Box key={node.id} mode={mode} style={node.style}>
             <LayoutNodeComponent
-              components={Component.components}
+              components={Component}
               data={value}
               itemKey={itemKey}
               mode={mode}
@@ -80,7 +79,16 @@ export function LayoutNodeComponent({
           </Box>
         )
       }
-      return <Component key={node.id} itemKey={itemKey} node={node} />
+
+      if (!Component) {
+        return (
+          <Text mode={mode} style={node.style}>
+            {value}
+          </Text>
+        )
+      }
+
+      return <Component key={node.id} node={node} value={value} />
     case 'image':
       return null
     case 'text':

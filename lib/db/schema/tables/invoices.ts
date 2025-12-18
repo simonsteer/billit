@@ -29,8 +29,6 @@ export const invoices = pgTable(
       .references(() => clients.id),
     client_snapshot: jsonb().$type<ClientJson>().notNull(),
     business_profile_snapshot: jsonb().$type<BusinessProfileJson>().notNull(),
-    from_description: text().notNull(),
-    to_description: text().notNull(),
     payment_description: text().notNull(),
     invoice_number: integer().notNull(),
     date_issued: date().notNull(),

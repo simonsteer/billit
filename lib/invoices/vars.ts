@@ -1,15 +1,3 @@
-export const DEFAULT_FROM_DESCRIPTION = [
-  'Name, Company',
-  'Street Address',
-  'City, ZIP / Postal Code',
-].join('\n')
-
-export const DEFAULT_TO_DESCRIPTION = [
-  'Client Name',
-  'Company',
-  'Contact information',
-].join('\n')
-
 export const DEFAULT_PAYMENT_DESCRIPTION = [
   'Account Number',
   'Bank Name',

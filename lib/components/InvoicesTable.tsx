@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
 import { ReactNode, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
@@ -114,19 +115,18 @@ function TableContents({
             locale,
           })
 
-          const today = DateTime.now()
           const dateIssued = DateTime.fromSQL(invoice.date_issued)
           const dateDue = DateTime.fromSQL(invoice.date_due)
 
-          const paid = invoice.paid_at !== null
-          const overdue = !paid && today > dateDue
-          const status = paid ? 'paid' : overdue ? 'overdue' : 'pending'
-
           return (
             <tr key={invoice.id}>
-              <TableData>{invoice.invoice_number}</TableData>
+              <TableData>
+                <Link href={`/invoices/${invoice.id}`}>
+                  {invoice.invoice_number}
+                </Link>
+              </TableData>
               <TableData className="max-w-200 truncate">
-                {invoice.to_description.split('\n')[0]}
+                {invoice.client_snapshot.client_name}
               </TableData>
               <TableData>{dateIssued.toFormat('LLL dd, yyyy')}</TableData>
               <TableData>{dateDue.toFormat('LLL dd, yyyy')}</TableData>

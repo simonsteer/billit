@@ -128,7 +128,7 @@ export const DEFAULT_LAYOUT = root({
                   box({
                     style: { flex: 1, flexDirection: 'row' },
                     children: [
-                      field({ value: 'label' }),
+                      field({ value: 'text' }),
                       text({ value: '(', style: { paddingLeft: 4 } }),
                       field({ value: 'amount' }),
                       text({ value: '%)' }),
