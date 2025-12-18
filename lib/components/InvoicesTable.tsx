@@ -109,7 +109,7 @@ function TableContents({
         </tr>
       </thead>
       <tbody>
-        {data.invoices.map(invoice => {
+        {data.invoices.map((invoice, index) => {
           const formatCurrency = getCurrencyFormatter({
             currency: invoice.currency,
             locale,
@@ -118,8 +118,16 @@ function TableContents({
           const dateIssued = DateTime.fromSQL(invoice.date_issued)
           const dateDue = DateTime.fromSQL(invoice.date_due)
 
+          const isLast = index === data.invoices.length - 1
+
           return (
-            <tr key={invoice.id}>
+            <tr
+              key={invoice.id}
+              className={clsx(
+                'border-y border-neutral-300',
+                isLast && data.invoices.length > 10 && 'border-b-0'
+              )}
+            >
               <TableData>
                 <Link href={`/invoices/${invoice.id}`}>
                   {invoice.invoice_number}
@@ -174,7 +182,7 @@ function TableData({
   return (
     <td
       className={clsx(
-        'border border-neutral-300 first:border-l-0 last:border-r-0 font-mono text-12 leading-18 px-12 py-6 truncate',
+        'border-x border-neutral-300 first:border-l-0 last:border-r-0 font-mono text-12 leading-18 px-12 py-6 truncate',
         className
       )}
     >
