@@ -10,6 +10,7 @@ import {
   sql,
   sum,
 } from 'drizzle-orm'
+import { renderToStream } from '@react-pdf/renderer'
 import { baseProcedure, createTRPCRouter } from '@/lib/trpc/init'
 import { CurrencySchema } from '@/lib/currency/types'
 import { auth0 } from '@/lib/auth'
@@ -17,6 +18,9 @@ import { business_profiles, clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
 import { BusinessProfileUpdateSchema } from '@/lib/business_profiles/types'
 import { ClientUpdateSchema } from '@/lib/clients/types'
+import { Invoice } from '@/lib/components'
+import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
+import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
 
 export const trpcRouter = createTRPCRouter({
   getClients: baseProcedure.query(async () => {
@@ -49,6 +53,32 @@ export const trpcRouter = createTRPCRouter({
         )
 
       return invoice
+    }),
+  getInvoicePdf: baseProcedure
+    .input(type({ id: 'string' }))
+    .query(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return null
+
+      const [invoice = null] = await db()
+        .select()
+        .from(invoices)
+        .where(
+          and(eq(invoices.id, input.id), eq(invoices.user_id, session.user.sub))
+        )
+      if (!invoice) return null
+
+      const locale = await inferLocaleFromHeaders()
+      const stream = await renderToStream(
+        <Invoice
+          mode="yoga"
+          invoice={invoice}
+          locale={locale}
+          layout={DEFAULT_LAYOUT}
+        />
+      )
+      return stream
     }),
   getInvoices: baseProcedure
     .input(

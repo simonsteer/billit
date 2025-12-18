@@ -1,13 +1,7 @@
-import { DateTime } from 'luxon'
 import { nanoid } from 'nanoid'
 import BigNumber from 'bignumber.js'
 import { InvoiceJson, LineItemJson, TaxItemJson } from '@/lib/invoices/types'
-import {
-  DEFAULT_FROM_DESCRIPTION,
-  DEFAULT_LINE_ITEM_DESCRIPTION,
-  DEFAULT_PAYMENT_DESCRIPTION,
-  DEFAULT_TO_DESCRIPTION,
-} from '@/lib/invoices/vars'
+import { DEFAULT_LINE_ITEM_DESCRIPTION } from '@/lib/invoices/vars'
 
 export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
   const diff: Partial<InvoiceJson> = {}
@@ -22,10 +16,6 @@ export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
 
   if (a.date_due !== b.date_due) {
     diff.date_due = b.date_due
-  }
-
-  if (a.date_paid !== b.date_paid) {
-    diff.date_paid = b.date_paid
   }
 
   if (a.from_description !== b.from_description) {
@@ -80,32 +70,6 @@ export function getInvoiceDiff(a: InvoiceJson, b: InvoiceJson) {
   }
 
   return diff
-}
-
-export const getAnonymousInvoice = (): InvoiceJson => {
-  const now = DateTime.now()
-  const startOfDay = now.startOf('day')
-
-  return {
-    user_id: 'anonymous',
-    client_id: 'anonymous',
-    id: nanoid(),
-    created_at: now.toSQLDate(),
-    currency: 'USD',
-    date_issued: startOfDay.toSQLDate(),
-    date_due: startOfDay.toSQLDate(),
-    date_paid: null,
-    from_description: DEFAULT_FROM_DESCRIPTION,
-    invoice_number: 1,
-    line_items: [getDefaultLineItem()],
-    payment_description: DEFAULT_PAYMENT_DESCRIPTION,
-    tax_items: [],
-    to_description: DEFAULT_TO_DESCRIPTION,
-    updated_at: null,
-    subtotal: 0,
-    total: 0,
-    total_usd: 0,
-  }
 }
 
 export const getLineItemCost = (lineItem: LineItemJson) =>
