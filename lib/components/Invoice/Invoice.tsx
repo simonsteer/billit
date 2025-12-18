@@ -1,7 +1,7 @@
 import { LayoutMode, RootLayoutNode } from '@/lib/layouts/types'
 import { InvoiceJson } from '@/lib/invoices/types'
-import { LayoutNodeComponent } from './components'
 import { getInvoiceRenderData } from '@/lib/invoices/utils'
+import { LayoutNodeComponent } from './components'
 
 export function Invoice({
   invoice,
