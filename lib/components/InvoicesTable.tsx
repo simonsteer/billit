@@ -63,7 +63,7 @@ export function InvoicesTable({
           </div>
         )}
         {!isPending && data && data.invoices.length > 0 && (
-          <TableContents data={data} locale={locale} />
+          <Table data={data} locale={locale} />
         )}
       </div>
       <div className="flex items-center justify-center h-48">
@@ -88,7 +88,7 @@ export function InvoicesTable({
   )
 }
 
-function TableContents({
+function Table({
   data,
   locale,
 }: {
