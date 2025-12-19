@@ -1,6 +1,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 
+const PEEK_SIZE = 4
+
 export function Pagination({
   currentPage,
   maxPage,
@@ -8,9 +10,7 @@ export function Pagination({
   className,
   onClickPrev,
   onClickNext,
-  peekSize = 4,
 }: {
-  peekSize?: number
   currentPage: number
   maxPage: number
   onClickPage: (n: number) => void
@@ -18,7 +18,7 @@ export function Pagination({
   onClickPrev(): void
   onClickNext(): void
 }) {
-  const numberGroups = getNumberGroups({ currentPage, maxPage, peekSize })
+  const paginationGroups = getPaginationGroups({ currentPage, maxPage })
 
   return (
     <div className={clsx('flex items-center justify-center', className)}>
@@ -32,7 +32,7 @@ export function Pagination({
         <ChevronLeftIcon />
       </button>
       <ul className="mx-12 flex items-center justify-center font-sans text-14 leading-20">
-        {numberGroups.map((group, index) => (
+        {paginationGroups.map((group, index) => (
           <li className="flex" key={index}>
             {index > 0 && <div className="mx-12">...</div>}
             <div className="flex">
@@ -73,29 +73,30 @@ export function Pagination({
   )
 }
 
-const getNumberGroups = ({
+export const getPaginationGroups = ({
   currentPage,
   maxPage,
-  peekSize,
 }: {
   currentPage: number
   maxPage: number
-  peekSize: number
 }): number[][] => {
-  if (maxPage < peekSize * 2 - 2) {
+  if (maxPage < PEEK_SIZE * 2 - 2) {
     return [[...Array(maxPage)].map((_, p) => p + 1)]
   }
 
-  if (currentPage < peekSize) {
-    return [[...Array(peekSize)].map((_, i) => i + 1), [maxPage]]
+  if (currentPage < PEEK_SIZE) {
+    return [[...Array(PEEK_SIZE)].map((_, i) => i + 1), [maxPage]]
   }
 
-  if (currentPage >= peekSize && currentPage <= maxPage - (peekSize - 1)) {
+  if (currentPage >= PEEK_SIZE && currentPage <= maxPage - (PEEK_SIZE - 1)) {
     return [[1], [currentPage - 1, currentPage, currentPage + 1], [maxPage]]
   }
 
-  if (currentPage >= maxPage - (peekSize + 1)) {
-    return [[1], [...Array(peekSize)].map((_, i) => maxPage - peekSize + i + 1)]
+  if (currentPage >= maxPage - (PEEK_SIZE + 1)) {
+    return [
+      [1],
+      [...Array(PEEK_SIZE)].map((_, i) => maxPage - PEEK_SIZE + i + 1),
+    ]
   }
 
   return [[...Array(maxPage)].map((_, p) => p + 1)]

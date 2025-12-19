@@ -3,13 +3,13 @@
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { DateTime } from 'luxon'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { getCurrencyFormatter } from '@/lib/currency/utils'
 import { trpc } from '@/lib/trpc/react'
 import { ProcedureInput, ProcedureOutput } from '@/lib/trpc/types'
-import { Pagination, Spinner } from '@/lib/components'
+import { Pagination, Spinner, getPaginationGroups } from '@/lib/components'
 
 export function InvoicesTable({
   params,
@@ -21,18 +21,27 @@ export function InvoicesTable({
   title: string
 }) {
   const [page, setPage] = useState(params.page)
-  const { data, error, isPending } = trpc.getInvoices.useQuery(
-    {
-      ...params,
-      page,
-    },
-    {}
-  )
+  const { data, error, isPending } = trpc.getInvoices.useQuery({
+    ...params,
+    page,
+  })
 
   const [stale, setStale] = useState(data)
   useEffect(() => {
     if (data !== undefined) setStale(data)
   }, [data])
+
+  const visiblePages = useMemo(
+    () => (stale ? getPaginationGroups(stale).flatMap(g => g) : []),
+    [stale]
+  )
+  const trpcUtils = trpc.useUtils()
+  useEffect(() => {
+    if (visiblePages.length === 0) return
+    visiblePages.forEach(page =>
+      trpcUtils.getInvoices.prefetch({ ...params, page })
+    )
+  }, [params, visiblePages, trpcUtils])
 
   return (
     <div>
@@ -161,7 +170,7 @@ function TableHeading({ children }: { children: ReactNode }) {
   return (
     <th
       className={clsx(
-        'relative sticky top-0 whitespace-nowrap font-normal font-serif text-14 leading-20 px-12 py-6 text-left bg-white',
+        'relative sticky top-0 whitespace-nowrap font-normal font-serif text-14 leading-18 px-12 pb-6 pt-8 text-left bg-white',
         'border-x first:border-l-0 last:border-r-0 border-neutral-300',
         'after:absolute after:inset-x-0 after:top-full after:h-px after:bg-neutral-300'
       )}
