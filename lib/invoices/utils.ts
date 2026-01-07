@@ -101,7 +101,7 @@ export const getDefaultLineItem = (): LineItemJson => ({
   price: 0,
 })
 
-export const getInvoiceRenderData = ({
+export const getInvoicePresentationData = ({
   invoice,
   locale,
 }: {
