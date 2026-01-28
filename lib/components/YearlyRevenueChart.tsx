@@ -26,7 +26,15 @@ export function YearlyRevenueChart({ locale }: { locale: string }) {
         style={{ aspectRatio: VIEWPORT_WIDTH / VIEWPORT_HEIGHT }}
       >
         {data ? (
-          <RevenueChart data={data} locale={locale} />
+          data.length > 0 ? (
+            <RevenueChart data={data} locale={locale} />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-16 leading-24 text-center">
+                No revenue data available for this time period.
+              </p>
+            </div>
+          )
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             {isPending ? (
