@@ -1,5 +1,6 @@
 import {
   DashboardIcon,
+  ExitIcon,
   FaceIcon,
   FileIcon,
   FileTextIcon,
@@ -27,6 +28,9 @@ export default function Layout({ children }: LayoutProps<'/'>) {
           </DashboardNavLink>
           <DashboardNavLink icon={<FaceIcon />} href="/profile">
             Profile
+          </DashboardNavLink>
+          <DashboardNavLink icon={<ExitIcon />} href="/auth/logout">
+            Logout
           </DashboardNavLink>
         </nav>
         <span className="py-24 shrink-0">
