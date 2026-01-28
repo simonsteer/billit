@@ -16,7 +16,10 @@ import { CurrencySchema } from '@/lib/currency/types'
 import { auth0 } from '@/lib/auth'
 import { business_profiles, clients, invoices } from '@/lib/db/schema'
 import { db } from '@/lib/db/client'
-import { BusinessProfileUpdateSchema } from '@/lib/business_profiles/types'
+import {
+  BusinessProfileInsertSchema,
+  BusinessProfileUpdateSchema,
+} from '@/lib/business_profiles/types'
 import { ClientUpdateSchema } from '@/lib/clients/types'
 import { Invoice } from '@/lib/components'
 import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
@@ -176,6 +179,26 @@ export const trpcRouter = createTRPCRouter({
 
     return profile
   }),
+  createBusinessProfile: baseProcedure
+    .input(BusinessProfileInsertSchema.omit('user_id'))
+    .mutation(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return null
+
+      const [existing = null] = await db()
+        .select()
+        .from(business_profiles)
+        .where(and(eq(business_profiles.user_id, session.user.sub)))
+      if (existing) return null
+
+      const [profile = null] = await db()
+        .insert(business_profiles)
+        .values({ ...input, user_id: session.user.sub })
+        .returning()
+
+      return profile
+    }),
   updateBusinessProfile: baseProcedure
     .input(type({ id: 'string', updates: BusinessProfileUpdateSchema }))
     .mutation(async ({ input }) => {

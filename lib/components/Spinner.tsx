@@ -4,15 +4,17 @@ import { CSSProperties } from 'react'
 export function Spinner({
   className,
   style,
+  size = 24,
 }: {
   className?: string
   style?: CSSProperties
+  size?: number
 }) {
   return (
     <div
-      style={style}
+      style={{ width: size, height: size, ...style }}
       className={clsx(
-        'w-24 h-24 rounded-full border-2 border-neutral-300 border-r-transparent animate-spin',
+        'rounded-full border-2 border-neutral-300 border-r-transparent animate-spin',
         className
       )}
     />

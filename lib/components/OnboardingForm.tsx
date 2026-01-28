@@ -1,11 +1,21 @@
 'use client'
 
-import { BusinessProfileJson } from '@/lib/business_profiles/types'
-import { TextInput } from '@/lib/components'
-import { usePartialState } from '@/lib/hooks'
 import clsx from 'clsx'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { BusinessProfileJson } from '@/lib/business_profiles/types'
+import { Spinner, TextInput } from '@/lib/components'
+import { usePartialState } from '@/lib/hooks'
+import { trpc } from '@/lib/trpc/react'
 
 export function OnboardingForm() {
+  const router = useRouter()
+  const { data, isPending, mutate } = trpc.createBusinessProfile.useMutation()
+  useEffect(() => {
+    if (isPending || !data) return
+    router.push('/dashboard')
+  }, [isPending, data])
+
   const [profile, setProfile] = usePartialState<
     Omit<BusinessProfileJson, 'id' | 'created_at' | 'updated_at' | 'user_id'>
   >({
@@ -32,7 +42,14 @@ export function OnboardingForm() {
   const disabled = business_name.trim().length < 2
 
   return (
-    <form className="flex flex-col gap-18 w-full">
+    <form
+      className="flex flex-col gap-18 w-full"
+      onSubmit={e => {
+        if (isPending) return
+        e.preventDefault()
+        mutate(profile)
+      }}
+    >
       <TextInput
         id="business_name"
         value={business_name || ''}
@@ -98,11 +115,16 @@ export function OnboardingForm() {
       </div>
       <button
         className={clsx(
-          'mt-40 ml-auto text-14 leading-20 px-12 py-6 text-white rounded-sm font-semibold',
+          'cursor-pointer mt-40 ml-auto text-14 leading-20 w-72 h-32 text-white rounded-sm font-semibold',
+          'flex items-center justify-center',
           disabled ? 'bg-neutral-200' : 'bg-blue-400'
         )}
       >
-        Submit
+        {isPending ? (
+          <Spinner size={16} className="border-white" />
+        ) : (
+          <span>Submit</span>
+        )}
       </button>
     </form>
   )
