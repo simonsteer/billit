@@ -25,9 +25,11 @@ export function ClientPreviewCard({
       href={`/clients/${client.id}`}
       className="flex flex-col justify-between rounded-sm border border-neutral-300 h-140 p-12"
     >
-      <p className="text-14 leading-20 font-semibold">{client.client_name}</p>
+      <p className="text-14 leading-20 font-semibold font-sans">
+        {client.client_name}
+      </p>
       <div>
-        <p className="text-12 leading-18 mb-4">
+        <p className="text-12 leading-18 mb-4 font-sans">
           {client.invoices_count} invoices
         </p>
         <div className="flex items-end">
@@ -35,7 +37,7 @@ export function ClientPreviewCard({
             <Spinner size={14} className="mt-4" />
           ) : (
             typeof data === 'number' && (
-              <p className="text-12 leading-18">
+              <p className="text-12 leading-18 font-sans">
                 {formatCurrency(BigNumber(data).shiftedBy(-2).toNumber())}{' '}
                 outstanding
               </p>

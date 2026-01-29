@@ -5,6 +5,7 @@ import {
   count,
   desc,
   eq,
+  ilike,
   isNotNull,
   isNull,
   sql,
@@ -26,21 +27,34 @@ import { inferLocaleFromHeaders } from '@/lib/i18n/utils'
 import { DEFAULT_LAYOUT } from '@/lib/layouts/vars'
 
 export const trpcRouter = createTRPCRouter({
-  getClients: baseProcedure.query(async () => {
-    'use server'
-    const session = await auth0.getSession()
-    if (!session) return []
+  getClients: baseProcedure
+    .input(type({ ['query?']: 'string | undefined' }).or('undefined'))
+    .query(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return []
 
-    return await db()
-      .select({
-        id: clients.id,
-        client_name: clients.client_name,
-        invoices_count: count(invoices.id),
-      })
-      .from(clients)
-      .leftJoin(invoices, eq(invoices.client_id, clients.id))
-      .groupBy(clients.id, clients.client_name)
-  }),
+      const rows = db()
+        .select({
+          id: clients.id,
+          client_name: clients.client_name,
+          invoices_count: count(invoices.id),
+        })
+        .from(clients)
+        .leftJoin(invoices, eq(invoices.client_id, clients.id))
+        .groupBy(clients.id, clients.client_name)
+
+      if (!input?.query) {
+        return await rows.where(eq(clients.user_id, session.user.sub))
+      }
+
+      return await rows.where(
+        and(
+          eq(clients.user_id, session.user.sub),
+          ilike(clients.client_name, `%${input.query}%`)
+        )
+      )
+    }),
   getInvoice: baseProcedure
     .input(type({ id: 'string' }))
     .query(async ({ input }) => {
