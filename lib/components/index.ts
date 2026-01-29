@@ -1,4 +1,5 @@
 export * from './BusinessProfileForm'
+export * from './ClientPreviewCard'
 export * from './DashboardNavLink'
 export * from './Invoice'
 export * from './InvoiceEditorForm'

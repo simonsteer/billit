@@ -236,4 +236,25 @@ export const trpcRouter = createTRPCRouter({
 
       return client
     }),
+  getOutstandingClientBalance: baseProcedure
+    .input(type({ id: 'string ' }))
+    .query(async ({ input }) => {
+      'use server'
+      const session = await auth0.getSession()
+      if (!session) return null
+
+      const [{ total_usd } = { total_usd: 0 }] = await db()
+        .select({
+          total_usd: sum(invoices.total_usd).mapWith(Number),
+        })
+        .from(invoices)
+        .where(
+          and(
+            eq(invoices.user_id, session.user.sub),
+            eq(invoices.client_id, input.id),
+            isNull(invoices.paid_at)
+          )
+        )
+      return total_usd
+    }),
 })
