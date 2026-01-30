@@ -16,6 +16,7 @@ export function LayoutNodeComponent({
   itemKey,
   node,
   mode,
+  className,
 }: {
   node:
     | RootLayoutNode
@@ -26,6 +27,7 @@ export function LayoutNodeComponent({
   data: any
   components?: any
   itemKey?: string
+  className?: string
   mode: LayoutMode
 }) {
   switch (node.type) {
@@ -99,7 +101,13 @@ export function LayoutNodeComponent({
       )
     case 'root':
       return (
-        <Root key={node.id} mode={mode} style={node.style}>
+        <Root
+          key={node.id}
+          mode={mode}
+          style={node.style}
+          size={node.size}
+          className={className}
+        >
           {node.children.map(node => (
             <LayoutNodeComponent
               key={node.id}

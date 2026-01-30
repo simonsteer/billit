@@ -1,6 +1,7 @@
 import { box, field, root, text } from '@/lib/layouts/utils'
 
 export const DEFAULT_LAYOUT = root({
+  size: 'A4',
   style: {
     paddingTop: 16,
     paddingRight: 16,

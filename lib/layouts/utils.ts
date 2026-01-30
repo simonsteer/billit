@@ -9,6 +9,7 @@ import {
   TextLayoutNode,
 } from '@/lib/layouts/types'
 import { nanoid } from 'nanoid'
+import { SetRequired } from 'type-fest'
 
 export function parseInvoiceNodeStyle(
   _style: LayoutNodeStyle,
@@ -48,14 +49,16 @@ export function parseNumericInvoiceNodeStyle(
 }
 
 export const root = (
-  { style = {}, children = [] } = {} as Partial<
-    Pick<RootLayoutNode, 'style' | 'children'>
+  { style = {}, children = [], size } = {} as SetRequired<
+    Partial<Pick<RootLayoutNode, 'style' | 'children' | 'size'>>,
+    'size'
   >
 ): RootLayoutNode => ({
   type: 'root',
   id: nanoid(),
   style,
   children,
+  size,
 })
 
 export const box = (

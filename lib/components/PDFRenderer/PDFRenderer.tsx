@@ -1,24 +1,24 @@
+import { JsonObject } from 'type-fest'
 import { LayoutMode, RootLayoutNode } from '@/lib/layouts/types'
-import { InvoiceJson } from '@/lib/invoices/types'
-import { getInvoicePresentationData } from '@/lib/invoices/utils'
 import { LayoutNodeComponent } from './components'
 
-export function Invoice({
-  invoice,
+export function PDFRenderer({
+  data,
   layout,
-  locale,
   mode,
+  className,
 }: {
-  invoice: InvoiceJson
+  data: JsonObject
   layout: RootLayoutNode
-  locale: string
   mode: LayoutMode
+  className?: string
 }) {
   return (
     <LayoutNodeComponent
-      data={getInvoicePresentationData({ invoice, locale })}
+      data={data}
       mode={mode}
       node={layout}
+      className={className}
     />
   )
 }
