@@ -54,11 +54,51 @@ html {
 }
 
 @utility text-* {
-  font-size: calc(--value(integer) / var(--base-unit) * 1rem);
+  font-size: calc(--value(integer) * var(--spacing));
 }
 
 @utility leading-* {
-  line-height: calc(--value(integer) / var(--base-unit) * 1rem);
+  line-height: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-all-* {
+  border-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-t-* {
+  border-top-left-radius: calc(--value(integer) * var(--spacing));
+  border-top-right-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-r-* {
+  border-top-right-radius: calc(--value(integer) * var(--spacing));
+  border-bottom-right-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-b-* {
+  border-bottom-left-radius: calc(--value(integer) * var(--spacing));
+  border-bottom-right-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-l-* {
+  border-top-left-radius: calc(--value(integer) * var(--spacing));
+  border-bottom-left-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-tl-* {
+  border-top-left-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-tr-* {
+  border-top-right-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-br-* {
+  border-bottom-right-radius: calc(--value(integer) * var(--spacing));
+}
+
+@utility rounded-bl-* {
+  border-bottom-left-radius: calc(--value(integer) * var(--spacing));
 }
 
 @utility no-scrollbar {
